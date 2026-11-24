@@ -16,22 +16,24 @@
     background: linear-gradient(#64b5f6 0%, #bbdefb 45%, #8bc34a 45%, #558b2f 100%); }
   .bulut { position: absolute; font-size: 60px; opacity: .9; animation: kay 30s linear infinite; }
   @keyframes kay { from { transform: translateX(-120px); } to { transform: translateX(120vw); } }
-  .karakter { position: absolute; bottom: 4%; font-size: 90px; animation: zipla 2s ease-in-out infinite; filter: drop-shadow(0 8px 6px rgba(0,0,0,.3)); }
+  .karakter { position: absolute; bottom: 4%; animation: zipla 2s ease-in-out infinite; filter: drop-shadow(0 8px 6px rgba(0,0,0,.3)); }
   .k1 { left: -6px; font-size: 110px; } .k2 { right: -6px; font-size: 110px; animation-delay: .5s; }
   .k3 { left: 70px; bottom: 1%; font-size: 50px; animation-delay: 1s; } .k4 { right: 70px; bottom: 1%; font-size: 50px; animation-delay: 1.5s; }
   @keyframes zipla { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
-  .kart { position: relative; z-index: 2; width: 100%; max-width: 330px; background: #fff; color: #333; border-radius: 14px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
-  .logo { width: 110px; height: 110px; margin: -50px auto 8px; border-radius: 50%; background: #c62828; border: 5px solid #ef9a9a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
+  .kart { position: relative; z-index: 2; width: 100%; max-width: 330px; background: #fff; color: #333; border-radius: 14px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); margin-top: 50px; }
+  .logo { width: 110px; height: 110px; margin: -70px auto 8px; border-radius: 50%; background: #c62828; border: 5px solid #ef9a9a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
   .logo small { font-size: 11px; letter-spacing: 1px; color: #fff; font-weight: bold; margin-top: -2px; }
-  .kart h3 { margin: 6px 0 10px; font-weight: normal; }
+  .sekmeler { display: flex; gap: 6px; margin: 6px 0 10px; }
+  .sekmeler button { flex: 1; background: #e0e0e0; color: #555; box-shadow: none; }
+  .sekmeler button.aktif { background: #c62828; color: #fff; }
   .kart input { width: 100%; padding: 12px; margin: 5px 0; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; }
-  .kart button { width: 100%; margin-top: 8px; font-size: 16px; padding: 12px; }
-  #girisBtn { background: #1e88e5; box-shadow: 0 4px 0 #1565c0; }
+  .kart .ana { width: 100%; margin-top: 8px; font-size: 16px; padding: 12px; }
+  #mesaj { color: #c62828; font-weight: bold; margin-top: 8px; font-size: 14px; }
 
   /* OYUN */
   #oyun { display: none; min-height: 100vh; padding-bottom: 70px; }
   .ustbar { position: sticky; top: 0; z-index: 5; background: #17202a; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 2px solid #2e4053; }
-  .ustbar .ad { font-size: 20px; font-weight: bold; }
+  .ustbar .ad { font-size: 16px; font-weight: bold; }
   .ustbar .parabar { background: #f9a825; color: #3e2723; border-radius: 20px; padding: 6px 14px; font-weight: bold; }
   .gorunum { display: none; } .gorunum.aktif { display: block; }
 
@@ -65,6 +67,10 @@
   #toplaBtn { width: 100%; margin-top: 12px; font-size: 20px; padding: 14px; background: #f9a825; box-shadow: 0 5px 0 #f57f17; color: #3e2723; }
   #toplaBtn.hazir { animation: nabiz 1.1s ease-in-out infinite; }
   @keyframes nabiz { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .sigorta { display: flex; align-items: center; gap: 10px; text-align: left; background: #212f3d; border: 2px solid #2e86c1; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 14px; }
+  .sigorta input { width: 26px; height: 26px; flex: none; }
+  .olaykutu { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
+  .olaykutu div { padding: 3px 0; }
 
   .alt { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; display: flex; background: #17202a; border-top: 2px solid #2e4053; }
   .alt button { flex: 1; background: none; box-shadow: none; border-radius: 0; padding: 10px 0; font-size: 12px; color: #aab7b8; }
@@ -74,7 +80,8 @@
   .ucan { position: fixed; z-index: 20; pointer-events: none; font-weight: bold; font-size: 22px; color: #ffd54f; text-shadow: 0 2px 4px #000; animation: yuksel 1.1s ease-out forwards; }
   .ucan.kirmizi { color: #ef5350; }
   @keyframes yuksel { from { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, -90px) scale(1.4); } }
-  #mesaj { color: #ff8a80; font-weight: bold; text-align: center; padding: 6px 14px; position: relative; z-index: 3; }
+  #toast { position: fixed; top: 64px; left: 12px; right: 12px; z-index: 30; background: #fff8e1; color: #3e2723; border: 3px solid #ffb300; border-radius: 14px; padding: 12px; font-size: 14px; line-height: 1.5; box-shadow: 0 8px 20px rgba(0,0,0,.4); display: none; }
+  #oyunMesaj { color: #ff8a80; font-weight: bold; text-align: center; padding: 6px 14px; }
   .cikis { margin: 16px auto; display: block; background: #566573; box-shadow: 0 4px 0 #34495e; }
 </style>
 </head>
@@ -89,18 +96,23 @@
   <div class="karakter k4">🥕</div>
   <div class="kart">
     <div class="logo">🍎<small>MEYVE BANK</small></div>
-    <h3>Oyuncu Giriş Ekranı</h3>
+    <div class="sekmeler">
+      <button id="sekGiris" class="aktif">Giriş</button>
+      <button id="sekKayit">Kayıt</button>
+    </div>
+    <input id="ad" type="text" placeholder="Çiftçi adın" maxlength="16" style="display:none">
     <input id="eposta" type="email" placeholder="E-Mail Adresiniz">
     <input id="sifre" type="password" placeholder="Şifreniz (en az 6)">
-    <button id="kayitBtn">Hadi Başlayalım - Kayıt</button>
-    <button id="girisBtn">Giriş Yap</button>
+    <button id="anaBtn" class="ana" style="background:#1e88e5; box-shadow:0 4px 0 #1565c0">Giriş Yap</button>
     <div id="mesaj"></div>
   </div>
 </div>
 
+<div id="toast"></div>
+
 <div id="oyun">
   <div class="ustbar">
-    <div class="ad">🍎 Meyve Bank</div>
+    <div class="ad">🍎 <span id="ciftci">Çiftçi</span></div>
     <div class="parabar">💰 <span id="para">0</span></div>
   </div>
 
@@ -123,16 +135,26 @@
 
   <div id="v-bahce" class="gorunum"><div class="sayfa"><h2>🏡 Bahçem</h2><div class="izgara" id="bahceListe"></div></div></div>
 
-  <div id="v-pazar" class="gorunum"><div class="sayfa"><h2>🏪 Pazar</h2><div class="izgara" id="magaza"></div></div></div>
+  <div id="v-pazar" class="gorunum"><div class="sayfa">
+    <h2>🏪 Pazar</h2>
+    <div class="olaykutu">Aynı meyveden her aldığında sonraki fiyatı %8 artar. Ağaçların her an böcek, dolu ya da hırsız yüzünden zarar görebilir.</div>
+    <div class="izgara" id="magaza"></div>
+  </div></div>
 
   <div id="v-banka" class="gorunum"><div class="sayfa">
     <h2>🏦 Banka</h2>
     <div class="banka">
-      <div>Biriken kazanç</div>
+      <div>Biriken tahmini kazanç</div>
       <div class="buyuk">💰 <span id="birikim">0</span></div>
-      <small>En fazla 8 saatlik kazanç birikir.</small>
+      <small>En fazla 8 saatlik kazanç birikir. Toplarken olaylar kazancı artırabilir ya da azaltabilir.</small>
       <button id="toplaBtn">💰 Kazancı Topla</button>
     </div>
+    <label class="sigorta">
+      <input type="checkbox" id="sigortaKutu">
+      <span>🛡️ <b>Sigorta</b>: Kazancının %20'sini keser ama dolu, hırsız ve böcek istilasından korur.</span>
+    </label>
+    <div class="olaykutu" id="olaylar">Henüz olay yok. Kazancı topladığında burada neler olduğunu göreceksin.</div>
+    <div id="oyunMesaj"></div>
     <button id="cikisBtn" class="cikis">Çıkış</button>
   </div></div>
 
@@ -173,20 +195,44 @@ const MEYVELER = [
   { id: "karpuz",   ad: "Karpuz",      simge: "🍉", resim: "", fiyat: 25000000,  gelir: 55000 }
 ];
 const MAX_SANIYE = 8 * 60 * 60;
-const BASLANGIC_PARA = 1000000000;
+const BASLANGIC_PARA = 10000;
+const FIYAT_ARTIS = 1.08;
+const DONEM = 1800;      // 30 dakikalık dönemler
+const OLAY_SANSI = 0.45; // bir dönemde olay olma ihtimali
+const SURUM = 2;
+const OLAYLAR = [
+  { id: "altin", w: 5 }, { id: "bol", w: 12 }, { id: "dolu", w: 15 },
+  { id: "hirsiz", w: 8 }, { id: "bocek", w: 5 }
+];
 
 let uid = null;
-let durum = { para: 0, agaclar: {}, son: Date.now() };
+let durum = { ad: "", para: 0, agaclar: {}, son: Date.now(), sigorta: false, v: SURUM };
 let sonImza = "";
+let mod = "giris";
 
 const sayi = (n) => Math.floor(n).toLocaleString("tr-TR");
-const hata = (x) => { $("mesaj").textContent = x.message; };
 const gorsel = (m) => m.resim ? `<img src="${m.resim}" alt="${m.ad}">` : `<span>${m.simge}</span>`;
+const adet = (m) => durum.agaclar[m.id] || 0;
+const fiyatAl = (m) => Math.round(m.fiyat * Math.pow(FIYAT_ARTIS, adet(m)));
 
-function saniyelikGelir() { return MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0) * m.gelir, 0); }
+const HATALAR = {
+  "auth/email-already-in-use": "Bu e-posta zaten kayıtlı. Giriş sekmesini kullan.",
+  "auth/invalid-credential": "E-posta ya da şifre yanlış.",
+  "auth/invalid-email": "E-posta adresi geçersiz.",
+  "auth/weak-password": "Şifre en az 6 karakter olmalı.",
+  "auth/missing-password": "Şifreni yaz.",
+  "auth/too-many-requests": "Çok fazla deneme yaptın, biraz bekle."
+};
+function hata(x) {
+  const m = HATALAR[x.code] || x.message;
+  $("mesaj").textContent = m;
+  $("oyunMesaj").textContent = m;
+}
+
+function saniyelikGelir() { return MEYVELER.reduce((t, m) => t + adet(m) * m.gelir, 0); }
 function birikim() {
   const gecen = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
-  return Math.max(0, gecen) * saniyelikGelir();
+  return Math.max(0, gecen) * saniyelikGelir() * (durum.sigorta ? 0.8 : 1);
 }
 
 function ucur(metin, el, kirmizi) {
@@ -200,6 +246,71 @@ function ucur(metin, el, kirmizi) {
   setTimeout(() => d.remove(), 1100);
 }
 
+let toastZaman;
+function bildir(satirlar) {
+  if (!satirlar.length) return;
+  $("toast").innerHTML = satirlar.slice(0, 5).map((s) => `<div>${s}</div>`).join("") +
+    (satirlar.length > 5 ? `<div>... ve ${satirlar.length - 5} olay daha (Bankada)</div>` : "");
+  $("toast").style.display = "block";
+  clearTimeout(toastZaman);
+  toastZaman = setTimeout(() => { $("toast").style.display = "none"; }, 5000);
+}
+
+function agacKaybet() {
+  const liste = [];
+  MEYVELER.forEach((m) => { for (let i = 0; i < adet(m); i++) liste.push(m); });
+  if (!liste.length) return null;
+  const m = liste[Math.floor(Math.random() * liste.length)];
+  durum.agaclar[m.id] = adet(m) - 1;
+  return m;
+}
+
+// Birikmiş kazancı hesaplar, rastgele olayları uygular, parayı ekler
+function hasat() {
+  let kalan = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
+  kalan = Math.max(0, kalan);
+  const olaylar = [];
+  let toplam = 0;
+  const kesinti = durum.sigorta ? 0.8 : 1;
+  while (kalan > 0.001) {
+    const sure = Math.min(DONEM, kalan);
+    kalan -= sure;
+    let kazanc = sure * saniyelikGelir() * kesinti;
+    if (Math.random() < OLAY_SANSI * sure / DONEM) {
+      let r = Math.random() * 45, olay = "bol";
+      for (const o of OLAYLAR) { if (r < o.w) { olay = o.id; break; } r -= o.w; }
+      const kotu = olay === "dolu" || olay === "hirsiz" || olay === "bocek";
+      if (kotu && durum.sigorta) {
+        const ad = { dolu: "dolu", hirsiz: "hırsız", bocek: "böcek istilası" }[olay];
+        olaylar.push(`🛡️ Sigorta seni ${ad} olayından korudu.`);
+      } else if (olay === "altin") {
+        kazanc *= 3; olaylar.push("🌟 Altın hasat! Bu dönemin kazancı 3 katına çıktı.");
+      } else if (olay === "bol") {
+        kazanc *= 1.5; olaylar.push("🌞 Bol hasat! Bu dönemin kazancı %50 arttı.");
+      } else if (olay === "dolu") {
+        kazanc *= 0.5; olaylar.push("🌨️ Dolu yağdı! Bu dönemin kazancı yarıya düştü.");
+      } else if (olay === "hirsiz") {
+        kazanc = 0; olaylar.push("🦹 Hırsız girdi! Bu dönemin kazancı çalındı.");
+      } else if (olay === "bocek") {
+        const kayip = agacKaybet();
+        if (kayip) olaylar.push(`🐛 Böcek istilası! 1 ${kayip.ad} kurudu.`);
+      }
+    }
+    toplam += kazanc;
+  }
+  durum.para += toplam;
+  durum.son = Date.now();
+  return { toplam, olaylar };
+}
+
+function olayGoster(s) {
+  const satirlar = [`<div>💰 Toplanan: <b>+${sayi(s.toplam)}</b></div>`];
+  if (s.olaylar.length) s.olaylar.forEach((o) => satirlar.push(`<div>${o}</div>`));
+  else satirlar.push("<div>☀️ Sakin bir dönemdi, hiçbir olay olmadı.</div>");
+  $("olaylar").innerHTML = satirlar.join("");
+  bildir(s.olaylar);
+}
+
 function git(v) {
   document.querySelectorAll(".gorunum").forEach((e) => e.classList.remove("aktif"));
   $("v-" + v).classList.add("aktif");
@@ -211,104 +322,55 @@ document.addEventListener("click", (e) => {
   if (g) git(g.getAttribute("data-git"));
 });
 
-function listeleriCiz(b) {
+function listeleriCiz() {
   $("magaza").innerHTML = MEYVELER.map((m) => {
-    const adet = durum.agaclar[m.id] || 0;
-    const alinir = durum.para + b >= m.fiyat;
+    const f = fiyatAl(m);
     return `<div class="mkart"><div class="ad">${m.ad}</div>
       <div class="gorsel">${gorsel(m)}</div>
-      <div class="stok">Sahip olduğun: ${adet} · ⚡ ${sayi(m.gelir)}/sn</div>
-      <button data-al="${m.id}" ${alinir ? "" : "disabled"}>💰 ${sayi(m.fiyat)}</button></div>`;
+      <div class="stok">Sahip olduğun: ${adet(m)} · ⚡ ${sayi(m.gelir)}/sn</div>
+      <button data-al="${m.id}" ${durum.para >= f ? "" : "disabled"}>💰 ${sayi(f)}</button></div>`;
   }).join("");
 
-  const sahip = MEYVELER.filter((m) => (durum.agaclar[m.id] || 0) > 0);
-  $("bahceListe").innerHTML = sahip.length ? sahip.map((m) => {
-    const adet = durum.agaclar[m.id];
-    return `<div class="mkart"><div class="ad">${m.ad}</div>
+  const sahip = MEYVELER.filter((m) => adet(m) > 0);
+  $("bahceListe").innerHTML = sahip.length ? sahip.map((m) =>
+    `<div class="mkart"><div class="ad">${m.ad}</div>
       <div class="gorsel">${gorsel(m)}</div>
-      <div class="stok">${adet} adet · ⚡ ${sayi(adet * m.gelir)}/sn</div></div>`;
-  }).join("") : `<div class="bos">Bahçen boş. Pazardan ilk meyveni al! 🌱</div>`;
+      <div class="stok">${adet(m)} adet · ⚡ ${sayi(adet(m) * m.gelir)}/sn</div></div>`
+  ).join("") : `<div class="bos">Bahçen boş. Pazardan ilk meyveni al! 🌱</div>`;
 }
 
 function ciz() {
   const b = birikim();
-  const toplam = MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0), 0);
+  const toplam = MEYVELER.reduce((t, m) => t + adet(m), 0);
+  $("ciftci").textContent = durum.ad || "Çiftçi";
   $("para").textContent = sayi(durum.para);
   $("saniyelik").textContent = sayi(saniyelikGelir());
   $("birikim").textContent = sayi(b);
   $("r-bahce").textContent = sayi(toplam);
   $("r-banka").style.display = b >= 1 ? "block" : "none";
   $("toplaBtn").classList.toggle("hazir", b >= 1);
-  const imza = MEYVELER.map((m) => (durum.agaclar[m.id] || 0) + ":" + (durum.para + b >= m.fiyat ? 1 : 0)).join("|");
-  if (imza !== sonImza) { sonImza = imza; listeleriCiz(b); }
+  const imza = MEYVELER.map((m) => adet(m) + ":" + (durum.para >= fiyatAl(m) ? 1 : 0)).join("|");
+  if (imza !== sonImza) { sonImza = imza; listeleriCiz(); }
 }
 
 async function kaydet() {
-  await updateDoc(doc(db, "users", uid), { para: durum.para, agaclar: durum.agaclar, son: durum.son });
+  await updateDoc(doc(db, "users", uid), {
+    para: durum.para, agaclar: durum.agaclar, son: durum.son, sigorta: durum.sigorta
+  });
 }
+
 async function topla() {
-  const kazanc = birikim();
-  durum.para += kazanc;
-  durum.son = Date.now();
-  if (kazanc >= 1) ucur("+" + sayi(kazanc) + " 💰", $("toplaBtn"));
-  ciz();
-  await kaydet();
-}
-async function satinAl(id, el) {
-  const m = MEYVELER.find((x) => x.id === id);
-  const kazanc = birikim();
-  if (durum.para + kazanc < m.fiyat) return;
-  durum.para += kazanc - m.fiyat;
-  durum.agaclar[id] = (durum.agaclar[id] || 0) + 1;
-  durum.son = Date.now();
-  ucur("-" + sayi(m.fiyat), el, true);
+  const s = hasat();
+  if (s.toplam >= 1) ucur("+" + sayi(s.toplam) + " 💰", $("toplaBtn"));
+  olayGoster(s);
   sonImza = "";
   ciz();
   await kaydet();
 }
 
-$("magaza").addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-al]");
-  if (btn) satinAl(btn.getAttribute("data-al"), btn).catch(hata);
-});
-$("toplaBtn").onclick = () => topla().catch(hata);
-
-$("kayitBtn").onclick = async () => {
-  try {
-    $("mesaj").textContent = "";
-    const k = await createUserWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
-    await setDoc(doc(db, "users", k.user.uid), { eposta: k.user.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now() });
-  } catch (e) { hata(e); }
-};
-$("girisBtn").onclick = async () => {
-  try {
-    $("mesaj").textContent = "";
-    await signInWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
-  } catch (e) { hata(e); }
-};
-$("cikisBtn").onclick = () => signOut(auth);
-
-onAuthStateChanged(auth, async (kullanici) => {
-  $("giris").style.display = kullanici ? "none" : "flex";
-  $("oyun").style.display = kullanici ? "block" : "none";
-  if (!kullanici) { uid = null; return; }
-  uid = kullanici.uid;
-  try {
-    const ref = doc(db, "users", uid);
-    let veri = await getDoc(ref);
-    if (!veri.exists()) {
-      await setDoc(ref, { eposta: kullanici.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now() });
-      veri = await getDoc(ref);
-    }
-    const v = veri.data();
-    durum = { para: v.para || 0, agaclar: v.agaclar || {}, son: v.son || Date.now() };
-    sonImza = "";
-    git("harita");
-    ciz();
-  } catch (e) { hata(e); }
-});
-
-setInterval(() => { if (uid) ciz(); }, 1000);
-</script>
-</body>
-</html>
+async function satinAl(id, el) {
+  const m = MEYVELER.find((x) => x.id === id);
+  // Önce birikmiş kazanç hesaplanır, olaylar uygulanır
+  if (birikim() >= 1) olayGoster(hasat());
+  const f = fiyatAl(m);
+  if (durum.para < f) { sonImza = ""; ciz(
