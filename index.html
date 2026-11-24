@@ -4,19 +4,50 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meyve Bank</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f1f8e9; margin: 0; padding: 16px; max-width: 500px; margin: auto; }
+  h1 { text-align: center; color: #2e7d32; }
+  input { width: 100%; padding: 12px; margin: 6px 0; box-sizing: border-box; font-size: 16px; }
+  button { padding: 10px 14px; font-size: 16px; border: none; border-radius: 8px; background: #43a047; color: #fff; }
+  button:disabled { background: #aaa; }
+  .kutu { background: #fff; border-radius: 12px; padding: 14px; margin: 12px 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .para { font-size: 22px; font-weight: bold; }
+  .agac { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+  .agac:last-child { border-bottom: none; }
+  .kucuk { color: #666; font-size: 13px; }
+  #toplaBtn { width: 100%; background: #f9a825; font-size: 18px; }
+  #cikisBtn { background: #888; }
+  #mesaj { color: #c62828; }
+</style>
 </head>
 <body>
 <h1>🍎 Meyve Bank</h1>
 
-<div id="giris">
-  <input id="eposta" type="email" placeholder="E-posta"><br>
-  <input id="sifre" type="password" placeholder="Şifre (en az 6)"><br>
+<div id="giris" class="kutu">
+  <input id="eposta" type="email" placeholder="E-posta">
+  <input id="sifre" type="password" placeholder="Şifre (en az 6)">
   <button id="kayitBtn">Kayıt ol</button>
   <button id="girisBtn">Giriş yap</button>
 </div>
 
 <div id="oyun" style="display:none">
-  <p>Paran: <b id="para"></b> 💰</p>
+  <div class="kutu">
+    <div>Paran: <span class="para" id="para">0</span> 💰</div>
+    <div class="kucuk">Saniyede kazanç: <span id="saniyelik">0</span></div>
+  </div>
+
+  <div class="kutu">
+    <div>Biriken kazanç: <b id="birikim">0</b> 💰</div>
+    <div class="kucuk">En fazla 8 saatlik kazanç birikir.</div>
+    <br>
+    <button id="toplaBtn">Kazancı Topla</button>
+  </div>
+
+  <div class="kutu">
+    <b>Meyve Mağazası</b>
+    <div id="magaza"></div>
+  </div>
+
   <button id="cikisBtn">Çıkış</button>
 </div>
 
@@ -25,7 +56,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const app = initializeApp({
   apiKey: "AIzaSyBegnG3ID_DNMAwb8HyDmAMbXz7w_vsEdk",
@@ -39,16 +70,89 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const $ = (id) => document.getElementById(id);
 
+const MEYVELER = [
+  { id: "elma",   ad: "Elma",   simge: "🍎", fiyat: 1000,    gelir: 1 },
+  { id: "armut",  ad: "Armut",  simge: "🍐", fiyat: 10000,   gelir: 12 },
+  { id: "cilek",  ad: "Çilek",  simge: "🍓", fiyat: 100000,  gelir: 150 },
+  { id: "karpuz", ad: "Karpuz", simge: "🍉", fiyat: 1000000, gelir: 2000 }
+];
+const MAX_SANIYE = 8 * 60 * 60;
+const BASLANGIC_PARA = 1000000000;
+
+let uid = null;
+let durum = { para: 0, agaclar: {}, son: Date.now() };
+
+const sayi = (n) => Math.floor(n).toLocaleString("tr-TR");
+
+function saniyelikGelir() {
+  return MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0) * m.gelir, 0);
+}
+function birikim() {
+  const gecen = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
+  return Math.max(0, gecen) * saniyelikGelir();
+}
+
+function ciz() {
+  $("para").textContent = sayi(durum.para);
+  $("saniyelik").textContent = sayi(saniyelikGelir());
+  $("birikim").textContent = sayi(birikim());
+  $("magaza").innerHTML = MEYVELER.map((m) => {
+    const adet = durum.agaclar[m.id] || 0;
+    return `<div class="agac">
+      <div>${m.simge} <b>${m.ad}</b> (${adet} adet)<br>
+      <span class="kucuk">Fiyat: ${sayi(m.fiyat)} · Kazanç: ${sayi(m.gelir)}/sn</span></div>
+      <button data-al="${m.id}" ${durum.para < m.fiyat ? "disabled" : ""}>Satın al</button>
+    </div>`;
+  }).join("");
+}
+
+async function kaydet() {
+  await updateDoc(doc(db, "users", uid), {
+    para: durum.para,
+    agaclar: durum.agaclar,
+    son: durum.son
+  });
+}
+
+async function topla() {
+  durum.para += birikim();
+  durum.son = Date.now();
+  ciz();
+  await kaydet();
+}
+
+async function satinAl(id) {
+  const m = MEYVELER.find((x) => x.id === id);
+  const kazanc = birikim();
+  if (durum.para + kazanc < m.fiyat) return;
+  durum.para += kazanc - m.fiyat;
+  durum.agaclar[id] = (durum.agaclar[id] || 0) + 1;
+  durum.son = Date.now();
+  ciz();
+  await kaydet();
+}
+
+$("magaza").addEventListener("click", (e) => {
+  const id = e.target.getAttribute("data-al");
+  if (id) satinAl(id).catch((x) => $("mesaj").textContent = x.message);
+});
+$("toplaBtn").onclick = () => topla().catch((x) => $("mesaj").textContent = x.message);
+
 $("kayitBtn").onclick = async () => {
   try {
+    $("mesaj").textContent = "";
     const k = await createUserWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
-    await setDoc(doc(db, "users", k.user.uid), { eposta: k.user.email, para: 1000000000 });
+    await setDoc(doc(db, "users", k.user.uid), {
+      eposta: k.user.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now()
+    });
   } catch (e) { $("mesaj").textContent = e.message; }
 };
 
 $("girisBtn").onclick = async () => {
-  try { await signInWithEmailAndPassword(auth, $("eposta").value, $("sifre").value); }
-  catch (e) { $("mesaj").textContent = e.message; }
+  try {
+    $("mesaj").textContent = "";
+    await signInWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
+  } catch (e) { $("mesaj").textContent = e.message; }
 };
 
 $("cikisBtn").onclick = () => signOut(auth);
@@ -56,11 +160,26 @@ $("cikisBtn").onclick = () => signOut(auth);
 onAuthStateChanged(auth, async (kullanici) => {
   $("giris").style.display = kullanici ? "none" : "block";
   $("oyun").style.display = kullanici ? "block" : "none";
-  if (kullanici) {
-    const veri = await getDoc(doc(db, "users", kullanici.uid));
-    $("para").textContent = veri.exists() ? veri.data().para.toLocaleString("tr-TR") : "0";
-  }
+  if (!kullanici) { uid = null; return; }
+  uid = kullanici.uid;
+  try {
+    const ref = doc(db, "users", uid);
+    let veri = await getDoc(ref);
+    if (!veri.exists()) {
+      await setDoc(ref, { eposta: kullanici.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now() });
+      veri = await getDoc(ref);
+    }
+    const v = veri.data();
+    durum = {
+      para: v.para || 0,
+      agaclar: v.agaclar || {},
+      son: v.son || Date.now()
+    };
+    ciz();
+  } catch (e) { $("mesaj").textContent = e.message; }
 });
+
+setInterval(() => { if (uid) ciz(); }, 1000);
 </script>
 </body>
-  </html>
+</html>
