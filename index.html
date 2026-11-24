@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meyve Bank</title>
+</head>
+<body>
+<h1>🍎 Meyve Bank</h1>
+
+<div id="giris">
+  <input id="eposta" type="email" placeholder="E-posta"><br>
+  <input id="sifre" type="password" placeholder="Şifre (en az 6)"><br>
+  <button id="kayitBtn">Kayıt ol</button>
+  <button id="girisBtn">Giriş yap</button>
+</div>
+
+<div id="oyun" style="display:none">
+  <p>Paran: <b id="para"></b> 💰</p>
+  <button id="cikisBtn">Çıkış</button>
+</div>
+
+<p id="mesaj"></p>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+const app = initializeApp({
+  apiKey: "AIzaSyBegnG3ID_DNMAwb8HyDmAMbXz7w_vsEdk",
+  authDomain: "meyve-bank.firebaseapp.com",
+  projectId: "meyve-bank",
+  storageBucket: "meyve-bank.firebasestorage.app",
+  messagingSenderId: "470001117128",
+  appId: "1:470001117128:web:8bb1fcc194ac19e97442fd"
+});
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = (id) => document.getElementById(id);
+
+$("kayitBtn").onclick = async () => {
+  try {
+    const k = await createUserWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
+    await setDoc(doc(db, "users", k.user.uid), { eposta: k.user.email, para: 1000000000 });
+  } catch (e) { $("mesaj").textContent = e.message; }
+};
+
+$("girisBtn").onclick = async () => {
+  try { await signInWithEmailAndPassword(auth, $("eposta").value, $("sifre").value); }
+  catch (e) { $("mesaj").textContent = e.message; }
+};
+
+$("cikisBtn").onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async (kullanici) => {
+  $("giris").style.display = kullanici ? "none" : "block";
+  $("oyun").style.display = kullanici ? "block" : "none";
+  if (kullanici) {
+    const veri = await getDoc(doc(db, "users", kullanici.uid));
+    $("para").textContent = veri.exists() ? veri.data().para.toLocaleString("tr-TR") : "0";
+  }
+});
+</script>
+</body>
+  </html>
