@@ -5,53 +5,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Meyve Bank</title>
 <style>
-  body { font-family: Arial, sans-serif; background: #f1f8e9; margin: 0; padding: 16px; max-width: 500px; margin: auto; }
-  h1 { text-align: center; color: #2e7d32; }
-  input { width: 100%; padding: 12px; margin: 6px 0; box-sizing: border-box; font-size: 16px; }
-  button { padding: 10px 14px; font-size: 16px; border: none; border-radius: 8px; background: #43a047; color: #fff; }
-  button:disabled { background: #aaa; }
-  .kutu { background: #fff; border-radius: 12px; padding: 14px; margin: 12px 0; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
-  .para { font-size: 22px; font-weight: bold; }
-  .agac { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
-  .agac:last-child { border-bottom: none; }
-  .kucuk { color: #666; font-size: 13px; }
-  #toplaBtn { width: 100%; background: #f9a825; font-size: 18px; }
-  #cikisBtn { background: #888; }
-  #mesaj { color: #c62828; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; font-family: "Trebuchet MS", Arial, sans-serif; background: #1c2833; color: #fff; }
+  button { font-family: inherit; font-weight: bold; color: #fff; border: none; border-radius: 10px; padding: 10px 14px; font-size: 15px; background: #c0786a; box-shadow: 0 4px 0 #8d4f44; }
+  button:active { transform: translateY(4px); box-shadow: none; }
+  button:disabled { background: #7f8c8d; box-shadow: 0 4px 0 #566061; }
+
+  /* GİRİŞ */
+  #giris { min-height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 16px;
+    background: linear-gradient(#64b5f6 0%, #bbdefb 45%, #8bc34a 45%, #558b2f 100%); }
+  .bulut { position: absolute; font-size: 60px; opacity: .9; animation: kay 30s linear infinite; }
+  @keyframes kay { from { transform: translateX(-120px); } to { transform: translateX(120vw); } }
+  .karakter { position: absolute; bottom: 4%; font-size: 90px; animation: zipla 2s ease-in-out infinite; filter: drop-shadow(0 8px 6px rgba(0,0,0,.3)); }
+  .k1 { left: -6px; font-size: 110px; } .k2 { right: -6px; font-size: 110px; animation-delay: .5s; }
+  .k3 { left: 70px; bottom: 1%; font-size: 50px; animation-delay: 1s; } .k4 { right: 70px; bottom: 1%; font-size: 50px; animation-delay: 1.5s; }
+  @keyframes zipla { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
+  .kart { position: relative; z-index: 2; width: 100%; max-width: 330px; background: #fff; color: #333; border-radius: 14px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+  .logo { width: 110px; height: 110px; margin: -50px auto 8px; border-radius: 50%; background: #c62828; border: 5px solid #ef9a9a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
+  .logo small { font-size: 11px; letter-spacing: 1px; color: #fff; font-weight: bold; margin-top: -2px; }
+  .kart h3 { margin: 6px 0 10px; font-weight: normal; }
+  .kart input { width: 100%; padding: 12px; margin: 5px 0; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; }
+  .kart button { width: 100%; margin-top: 8px; font-size: 16px; padding: 12px; }
+  #girisBtn { background: #1e88e5; box-shadow: 0 4px 0 #1565c0; }
+
+  /* OYUN */
+  #oyun { display: none; min-height: 100vh; padding-bottom: 70px; }
+  .ustbar { position: sticky; top: 0; z-index: 5; background: #17202a; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 2px solid #2e4053; }
+  .ustbar .ad { font-size: 20px; font-weight: bold; }
+  .ustbar .parabar { background: #f9a825; color: #3e2723; border-radius: 20px; padding: 6px 14px; font-weight: bold; }
+  .gorunum { display: none; } .gorunum.aktif { display: block; }
+
+  .arazi { position: relative; height: 520px; overflow: hidden; background:
+    radial-gradient(circle at 20% 30%, rgba(0,0,0,.08) 0 40px, transparent 41px),
+    radial-gradient(circle at 70% 70%, rgba(0,0,0,.08) 0 50px, transparent 51px),
+    linear-gradient(#7cb342, #558b2f); }
+  .yol { position: absolute; left: 0; right: 0; height: 26px; background: #c9a36b; opacity: .75; border-radius: 20px; }
+  .agaclar { position: absolute; font-size: 34px; }
+  .bina { position: absolute; transform: translate(-50%, -50%); background: none; box-shadow: none; padding: 0; text-align: center; color: #fff; }
+  .bina:active { transform: translate(-50%, -46%); }
+  .bina .b-simge { font-size: 68px; display: block; filter: drop-shadow(0 6px 4px rgba(0,0,0,.4)); animation: nefes 3s ease-in-out infinite; }
+  @keyframes nefes { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+  .bina .b-ad { background: rgba(0,0,0,.6); border-radius: 10px; padding: 3px 10px; font-size: 14px; }
+  .rozet { position: absolute; top: -8px; right: -8px; background: #e53935; color: #fff; border-radius: 12px; min-width: 24px; padding: 2px 7px; font-size: 13px; }
+
+  .sayfa { padding: 14px; }
+  .sayfa h2 { margin: 4px 0 12px; }
+  .izgara { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mkart { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 10px; text-align: center; }
+  .mkart .ad { font-size: 14px; color: #d6eaf8; margin-bottom: 4px; }
+  .mkart .gorsel { height: 96px; display: flex; align-items: flex-end; justify-content: center; background: linear-gradient(transparent 60%, #4caf50 60%); border-radius: 10px; }
+  .mkart .gorsel span { font-size: 64px; animation: zipla 2.4s ease-in-out infinite; }
+  .mkart .gorsel img { max-height: 92px; }
+  .mkart .stok { font-size: 12px; color: #aab7b8; margin: 6px 0; background: #17202a; border-radius: 6px; padding: 3px; }
+  .mkart button { width: 100%; font-size: 14px; }
+  .bos { color: #aab7b8; text-align: center; padding: 30px 0; grid-column: 1 / -1; }
+
+  .banka { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 12px; }
+  .banka .buyuk { font-size: 30px; font-weight: bold; color: #f9a825; }
+  #toplaBtn { width: 100%; margin-top: 12px; font-size: 20px; padding: 14px; background: #f9a825; box-shadow: 0 5px 0 #f57f17; color: #3e2723; }
+  #toplaBtn.hazir { animation: nabiz 1.1s ease-in-out infinite; }
+  @keyframes nabiz { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+  .alt { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; display: flex; background: #17202a; border-top: 2px solid #2e4053; }
+  .alt button { flex: 1; background: none; box-shadow: none; border-radius: 0; padding: 10px 0; font-size: 12px; color: #aab7b8; }
+  .alt button span { display: block; font-size: 22px; }
+  .alt button.aktif { color: #fff; background: #2e86c1; }
+
+  .ucan { position: fixed; z-index: 20; pointer-events: none; font-weight: bold; font-size: 22px; color: #ffd54f; text-shadow: 0 2px 4px #000; animation: yuksel 1.1s ease-out forwards; }
+  .ucan.kirmizi { color: #ef5350; }
+  @keyframes yuksel { from { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, -90px) scale(1.4); } }
+  #mesaj { color: #ff8a80; font-weight: bold; text-align: center; padding: 6px 14px; position: relative; z-index: 3; }
+  .cikis { margin: 16px auto; display: block; background: #566573; box-shadow: 0 4px 0 #34495e; }
 </style>
 </head>
 <body>
-<h1>🍎 Meyve Bank</h1>
 
-<div id="giris" class="kutu">
-  <input id="eposta" type="email" placeholder="E-posta">
-  <input id="sifre" type="password" placeholder="Şifre (en az 6)">
-  <button id="kayitBtn">Kayıt ol</button>
-  <button id="girisBtn">Giriş yap</button>
+<div id="giris">
+  <div class="bulut" style="top:6%">☁️</div>
+  <div class="bulut" style="top:18%; animation-delay:-14s">☁️</div>
+  <div class="karakter k1">🍌</div>
+  <div class="karakter k2">🌶️</div>
+  <div class="karakter k3">🍅</div>
+  <div class="karakter k4">🥕</div>
+  <div class="kart">
+    <div class="logo">🍎<small>MEYVE BANK</small></div>
+    <h3>Oyuncu Giriş Ekranı</h3>
+    <input id="eposta" type="email" placeholder="E-Mail Adresiniz">
+    <input id="sifre" type="password" placeholder="Şifreniz (en az 6)">
+    <button id="kayitBtn">Hadi Başlayalım - Kayıt</button>
+    <button id="girisBtn">Giriş Yap</button>
+    <div id="mesaj"></div>
+  </div>
 </div>
 
-<div id="oyun" style="display:none">
-  <div class="kutu">
-    <div>Paran: <span class="para" id="para">0</span> 💰</div>
-    <div class="kucuk">Saniyede kazanç: <span id="saniyelik">0</span></div>
+<div id="oyun">
+  <div class="ustbar">
+    <div class="ad">🍎 Meyve Bank</div>
+    <div class="parabar">💰 <span id="para">0</span></div>
   </div>
 
-  <div class="kutu">
-    <div>Biriken kazanç: <b id="birikim">0</b> 💰</div>
-    <div class="kucuk">En fazla 8 saatlik kazanç birikir.</div>
-    <br>
-    <button id="toplaBtn">Kazancı Topla</button>
+  <div id="v-harita" class="gorunum aktif">
+    <div class="arazi">
+      <div class="yol" style="top:28%; transform: rotate(-3deg)"></div>
+      <div class="yol" style="top:62%; transform: rotate(3deg)"></div>
+      <span class="agaclar" style="left:6%; top:8%">🌳</span>
+      <span class="agaclar" style="right:8%; top:10%">🌲</span>
+      <span class="agaclar" style="left:10%; top:48%">🌲</span>
+      <span class="agaclar" style="right:6%; top:46%">🌳</span>
+      <span class="agaclar" style="left:6%; bottom:4%">🌲</span>
+      <span class="agaclar" style="right:10%; bottom:5%">🌳</span>
+      <button class="bina" data-git="bahce" style="left:28%; top:20%"><span class="b-simge">🏡</span><span class="b-ad">Bahçem</span><span class="rozet" id="r-bahce">0</span></button>
+      <button class="bina" data-git="pazar" style="left:72%; top:35%"><span class="b-simge">🏪</span><span class="b-ad">Pazar</span></button>
+      <button class="bina" data-git="banka" style="left:30%; top:62%"><span class="b-simge">🏦</span><span class="b-ad">Banka</span><span class="rozet" id="r-banka" style="display:none">!</span></button>
+      <button class="bina" data-git="bahce" style="left:74%; top:78%"><span class="b-simge">⚡</span><span class="b-ad"><span id="saniyelik">0</span> /sn</span></button>
+    </div>
   </div>
 
-  <div class="kutu">
-    <b>Meyve Mağazası</b>
-    <div id="magaza"></div>
-  </div>
+  <div id="v-bahce" class="gorunum"><div class="sayfa"><h2>🏡 Bahçem</h2><div class="izgara" id="bahceListe"></div></div></div>
 
-  <button id="cikisBtn">Çıkış</button>
+  <div id="v-pazar" class="gorunum"><div class="sayfa"><h2>🏪 Pazar</h2><div class="izgara" id="magaza"></div></div></div>
+
+  <div id="v-banka" class="gorunum"><div class="sayfa">
+    <h2>🏦 Banka</h2>
+    <div class="banka">
+      <div>Biriken kazanç</div>
+      <div class="buyuk">💰 <span id="birikim">0</span></div>
+      <small>En fazla 8 saatlik kazanç birikir.</small>
+      <button id="toplaBtn">💰 Kazancı Topla</button>
+    </div>
+    <button id="cikisBtn" class="cikis">Çıkış</button>
+  </div></div>
+
+  <div class="alt">
+    <button data-git="harita" class="aktif"><span>🗺️</span>Çiftlik</button>
+    <button data-git="bahce"><span>🏡</span>Bahçem</button>
+    <button data-git="pazar"><span>🏪</span>Pazar</button>
+    <button data-git="banka"><span>🏦</span>Banka</button>
+  </div>
 </div>
-
-<p id="mesaj"></p>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
@@ -70,95 +161,135 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const $ = (id) => document.getElementById(id);
 
+// resim: karakter resmi eklersen dosya adını yaz (örn. "muz.png"), boşsa emoji görünür
 const MEYVELER = [
-  { id: "elma",   ad: "Elma",   simge: "🍎", fiyat: 1000,    gelir: 1 },
-  { id: "armut",  ad: "Armut",  simge: "🍐", fiyat: 10000,   gelir: 12 },
-  { id: "cilek",  ad: "Çilek",  simge: "🍓", fiyat: 100000,  gelir: 150 },
-  { id: "karpuz", ad: "Karpuz", simge: "🍉", fiyat: 1000000, gelir: 2000 }
+  { id: "elma",     ad: "Elma",        simge: "🍎", resim: "", fiyat: 1000,      gelir: 1 },
+  { id: "havuc",    ad: "Havuç Adam",  simge: "🥕", resim: "", fiyat: 5000,      gelir: 6 },
+  { id: "muz",      ad: "Muz Adam",    simge: "🍌", resim: "", fiyat: 25000,     gelir: 35 },
+  { id: "domates",  ad: "Domates",     simge: "🍅", resim: "", fiyat: 100000,    gelir: 150 },
+  { id: "biber",    ad: "Biber Adam",  simge: "🌶️", resim: "", fiyat: 400000,    gelir: 650 },
+  { id: "patlican", ad: "Patlıcan",    simge: "🍆", resim: "", fiyat: 1500000,   gelir: 2800 },
+  { id: "misir",    ad: "Mısır",       simge: "🌽", resim: "", fiyat: 6000000,   gelir: 12000 },
+  { id: "karpuz",   ad: "Karpuz",      simge: "🍉", resim: "", fiyat: 25000000,  gelir: 55000 }
 ];
 const MAX_SANIYE = 8 * 60 * 60;
 const BASLANGIC_PARA = 1000000000;
 
 let uid = null;
 let durum = { para: 0, agaclar: {}, son: Date.now() };
+let sonImza = "";
 
 const sayi = (n) => Math.floor(n).toLocaleString("tr-TR");
+const hata = (x) => { $("mesaj").textContent = x.message; };
+const gorsel = (m) => m.resim ? `<img src="${m.resim}" alt="${m.ad}">` : `<span>${m.simge}</span>`;
 
-function saniyelikGelir() {
-  return MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0) * m.gelir, 0);
-}
+function saniyelikGelir() { return MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0) * m.gelir, 0); }
 function birikim() {
   const gecen = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
   return Math.max(0, gecen) * saniyelikGelir();
 }
 
-function ciz() {
-  $("para").textContent = sayi(durum.para);
-  $("saniyelik").textContent = sayi(saniyelikGelir());
-  $("birikim").textContent = sayi(birikim());
+function ucur(metin, el, kirmizi) {
+  const r = el.getBoundingClientRect();
+  const d = document.createElement("div");
+  d.className = "ucan" + (kirmizi ? " kirmizi" : "");
+  d.textContent = metin;
+  d.style.left = (r.left + r.width / 2) + "px";
+  d.style.top = r.top + "px";
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 1100);
+}
+
+function git(v) {
+  document.querySelectorAll(".gorunum").forEach((e) => e.classList.remove("aktif"));
+  $("v-" + v).classList.add("aktif");
+  document.querySelectorAll(".alt button").forEach((b) => b.classList.toggle("aktif", b.getAttribute("data-git") === v));
+  window.scrollTo(0, 0);
+}
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-git]");
+  if (g) git(g.getAttribute("data-git"));
+});
+
+function listeleriCiz(b) {
   $("magaza").innerHTML = MEYVELER.map((m) => {
     const adet = durum.agaclar[m.id] || 0;
-    return `<div class="agac">
-      <div>${m.simge} <b>${m.ad}</b> (${adet} adet)<br>
-      <span class="kucuk">Fiyat: ${sayi(m.fiyat)} · Kazanç: ${sayi(m.gelir)}/sn</span></div>
-      <button data-al="${m.id}" ${durum.para < m.fiyat ? "disabled" : ""}>Satın al</button>
-    </div>`;
+    const alinir = durum.para + b >= m.fiyat;
+    return `<div class="mkart"><div class="ad">${m.ad}</div>
+      <div class="gorsel">${gorsel(m)}</div>
+      <div class="stok">Sahip olduğun: ${adet} · ⚡ ${sayi(m.gelir)}/sn</div>
+      <button data-al="${m.id}" ${alinir ? "" : "disabled"}>💰 ${sayi(m.fiyat)}</button></div>`;
   }).join("");
+
+  const sahip = MEYVELER.filter((m) => (durum.agaclar[m.id] || 0) > 0);
+  $("bahceListe").innerHTML = sahip.length ? sahip.map((m) => {
+    const adet = durum.agaclar[m.id];
+    return `<div class="mkart"><div class="ad">${m.ad}</div>
+      <div class="gorsel">${gorsel(m)}</div>
+      <div class="stok">${adet} adet · ⚡ ${sayi(adet * m.gelir)}/sn</div></div>`;
+  }).join("") : `<div class="bos">Bahçen boş. Pazardan ilk meyveni al! 🌱</div>`;
+}
+
+function ciz() {
+  const b = birikim();
+  const toplam = MEYVELER.reduce((t, m) => t + (durum.agaclar[m.id] || 0), 0);
+  $("para").textContent = sayi(durum.para);
+  $("saniyelik").textContent = sayi(saniyelikGelir());
+  $("birikim").textContent = sayi(b);
+  $("r-bahce").textContent = sayi(toplam);
+  $("r-banka").style.display = b >= 1 ? "block" : "none";
+  $("toplaBtn").classList.toggle("hazir", b >= 1);
+  const imza = MEYVELER.map((m) => (durum.agaclar[m.id] || 0) + ":" + (durum.para + b >= m.fiyat ? 1 : 0)).join("|");
+  if (imza !== sonImza) { sonImza = imza; listeleriCiz(b); }
 }
 
 async function kaydet() {
-  await updateDoc(doc(db, "users", uid), {
-    para: durum.para,
-    agaclar: durum.agaclar,
-    son: durum.son
-  });
+  await updateDoc(doc(db, "users", uid), { para: durum.para, agaclar: durum.agaclar, son: durum.son });
 }
-
 async function topla() {
-  durum.para += birikim();
+  const kazanc = birikim();
+  durum.para += kazanc;
   durum.son = Date.now();
+  if (kazanc >= 1) ucur("+" + sayi(kazanc) + " 💰", $("toplaBtn"));
   ciz();
   await kaydet();
 }
-
-async function satinAl(id) {
+async function satinAl(id, el) {
   const m = MEYVELER.find((x) => x.id === id);
   const kazanc = birikim();
   if (durum.para + kazanc < m.fiyat) return;
   durum.para += kazanc - m.fiyat;
   durum.agaclar[id] = (durum.agaclar[id] || 0) + 1;
   durum.son = Date.now();
+  ucur("-" + sayi(m.fiyat), el, true);
+  sonImza = "";
   ciz();
   await kaydet();
 }
 
 $("magaza").addEventListener("click", (e) => {
-  const id = e.target.getAttribute("data-al");
-  if (id) satinAl(id).catch((x) => $("mesaj").textContent = x.message);
+  const btn = e.target.closest("[data-al]");
+  if (btn) satinAl(btn.getAttribute("data-al"), btn).catch(hata);
 });
-$("toplaBtn").onclick = () => topla().catch((x) => $("mesaj").textContent = x.message);
+$("toplaBtn").onclick = () => topla().catch(hata);
 
 $("kayitBtn").onclick = async () => {
   try {
     $("mesaj").textContent = "";
     const k = await createUserWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
-    await setDoc(doc(db, "users", k.user.uid), {
-      eposta: k.user.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now()
-    });
-  } catch (e) { $("mesaj").textContent = e.message; }
+    await setDoc(doc(db, "users", k.user.uid), { eposta: k.user.email, para: BASLANGIC_PARA, agaclar: {}, son: Date.now() });
+  } catch (e) { hata(e); }
 };
-
 $("girisBtn").onclick = async () => {
   try {
     $("mesaj").textContent = "";
     await signInWithEmailAndPassword(auth, $("eposta").value, $("sifre").value);
-  } catch (e) { $("mesaj").textContent = e.message; }
+  } catch (e) { hata(e); }
 };
-
 $("cikisBtn").onclick = () => signOut(auth);
 
 onAuthStateChanged(auth, async (kullanici) => {
-  $("giris").style.display = kullanici ? "none" : "block";
+  $("giris").style.display = kullanici ? "none" : "flex";
   $("oyun").style.display = kullanici ? "block" : "none";
   if (!kullanici) { uid = null; return; }
   uid = kullanici.uid;
@@ -170,13 +301,11 @@ onAuthStateChanged(auth, async (kullanici) => {
       veri = await getDoc(ref);
     }
     const v = veri.data();
-    durum = {
-      para: v.para || 0,
-      agaclar: v.agaclar || {},
-      son: v.son || Date.now()
-    };
+    durum = { para: v.para || 0, agaclar: v.agaclar || {}, son: v.son || Date.now() };
+    sonImza = "";
+    git("harita");
     ciz();
-  } catch (e) { $("mesaj").textContent = e.message; }
+  } catch (e) { hata(e); }
 });
 
 setInterval(() => { if (uid) ciz(); }, 1000);
