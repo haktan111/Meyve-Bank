@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#18231f">
+<title>Meyve Bank | Tarım İşletmesi</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
+:root{
+ --bg:#e8e9e2;--paper:#f5f5ef;--ink:#202a28;--muted:#77817a;--line:#d7dbd1;
+ --nav:#202a30;--nav2:#2b383e;--navline:#3b484d;--green:#547c4c;--green2:#739568;
+ --gold:#c9a45d;--soil:#74543b;--soil2:#927052;--red:#a95e4d;--blue:#6b8d9b;
+ --shadow:0 8px 24px rgba(24,35,31,.10)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",sans-serif;font-size:14px}
+button,input,select{font:inherit}button{cursor:pointer}
+#app{min-height:100vh;display:flex}
+.sidebar{width:244px;flex:0 0 244px;background:var(--nav);color:#e4e8e3;display:flex;flex-direction:column;min-height:100vh;position:sticky;top:0;height:100vh;z-index:5}
+.brand{height:78px;display:flex;align-items:center;padding:0 22px;border-bottom:1px solid var(--navline);gap:12px}
+.brand-mark{width:34px;height:34px;border:1px solid #a88b52;display:grid;place-items:center;color:#d8bd80;font-family:Manrope;font-weight:800;font-size:15px;transform:rotate(45deg)}
+.brand-mark span{transform:rotate(-45deg)}
+.brand-name{font:800 18px Manrope;letter-spacing:1.3px;color:#f1f0e8}.brand-name small{display:block;font:600 9px "DM Sans";letter-spacing:2px;color:#aab5ad;margin-top:3px}
+.profile{padding:20px 21px 17px;border-bottom:1px solid var(--navline)}
+.profile-top{display:flex;align-items:center;gap:11px}.avatar{width:43px;height:43px;border:1px solid #8d9c83;background:linear-gradient(145deg,#d4d8c8,#9ba992);display:grid;place-items:center;color:#314238;font:800 16px Manrope}
+.profile-name{font-weight:800;font-size:13px}.profile-role{color:#9eaaa3;font-size:11px;margin-top:3px}
+.level-line{height:4px;background:#46534e;margin-top:15px}.level-fill{height:100%;width:18%;background:#b69b62}.level-caption{display:flex;justify-content:space-between;font-size:10px;color:#aeb8b0;margin-top:6px}
+.nav-label{padding:20px 22px 8px;color:#7f8c86;font-size:9px;font-weight:800;letter-spacing:1.8px}
+.nav button{width:100%;border:0;border-left:3px solid transparent;background:transparent;color:#b9c3bd;padding:12px 20px;text-align:left;display:flex;align-items:center;gap:13px;font-weight:600;font-size:13px}
+.nav button:hover{background:#2a373d;color:#fff}.nav button.active{background:#34443e;color:#fff;border-left-color:#c5a45e}
+.nav-icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;color:#a9b69f}
+.nav-icon svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.side-bottom{margin-top:auto;padding:15px 21px;border-top:1px solid var(--navline);font-size:10px;color:#86948c;line-height:1.6}
+.main{min-width:0;flex:1}
+.topbar{height:78px;background:#f7f7f1;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;gap:18px}
+.breadcrumb{font:700 12px Manrope;color:#707b73;letter-spacing:.3px}.breadcrumb strong{color:#29352f}
+.topstats{display:flex;align-items:center;gap:10px}.stat{padding:9px 13px;border:1px solid var(--line);background:#fffefa;min-width:116px}.stat-label{font-size:9px;letter-spacing:1px;color:#859087;text-transform:uppercase;font-weight:800}.stat-value{font:800 15px Manrope;margin-top:2px;color:#28372f}.stat-value em{font-style:normal;color:#9d8147;font-size:10px;margin-left:3px}
+.content{padding:24px 28px 40px;max-width:1700px;margin:0 auto}
+.page{display:none}.page.active{display:block}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:19px;gap:15px}
+.eyebrow{font-size:10px;color:#8a7958;letter-spacing:1.7px;font-weight:800;text-transform:uppercase;margin-bottom:5px}
+h1{font:800 25px Manrope;margin:0;color:#26332d;letter-spacing:-.7px}
+.subtitle{font-size:12px;color:#7d877f;margin-top:5px}
+.btn{border:1px solid #476446;background:var(--green);color:#fff;padding:10px 15px;font-size:12px;font-weight:700;letter-spacing:.1px}
+.btn:hover{background:#456b40}.btn.secondary{background:#f7f7f0;color:#3d4b41;border-color:#cbd2c5}.btn.gold{background:#b29455;border-color:#9b8049}.btn.danger{background:#a45d4d;border-color:#8f4c3e}.btn:disabled{opacity:.45;cursor:not-allowed}
+.overview{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.kpi{background:#f8f8f2;border:1px solid var(--line);padding:14px 16px;box-shadow:0 2px 7px #24342a08}
+.kpi label{display:block;font-size:9px;letter-spacing:1.3px;color:#879188;font-weight:800;text-transform:uppercase}.kpi strong{display:block;font:800 20px Manrope;margin-top:5px;color:#2d3a31}.kpi small{font-size:10px;color:#8c968d}
+.farm-shell{background:#d5d9ca;border:1px solid #bfc7b7;box-shadow:var(--shadow);padding:9px}
+.farm-toolbar{background:#f6f6ef;border:1px solid #c8cec2;display:flex;justify-content:space-between;align-items:center;padding:10px 13px;gap:10px}
+.farm-toolbar strong{font:800 12px Manrope}.farm-toolbar span{font-size:10px;color:#78847a}
+.farm-map{height:680px;position:relative;overflow:hidden;background:#78965e;background-image:radial-gradient(ellipse at 20% 20%,#a6b987 0 10%,transparent 24%),radial-gradient(ellipse at 84% 72%,#9caf7c 0 13%,transparent 25%),linear-gradient(135deg,#78965e,#6e8956 55%,#819b68)}
+.farm-map-art{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.map-label{font:700 11px Manrope,sans-serif;letter-spacing:1.2px;fill:#f7f4e9;paint-order:stroke;stroke:#31452e;stroke-width:3px;stroke-linejoin:round}
+.map-small{font:600 8px sans-serif;fill:#f4f0df;paint-order:stroke;stroke:#40543a;stroke-width:2px;stroke-linejoin:round}
+.plot-area{z-index:3;left:34%;top:34%;width:34%;height:31%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:10px;transform:skew(-9deg);padding:5px;background:#4e663c55;border:2px solid #d0bd8a88;box-shadow:0 8px 20px #253b2455}
+.plot{background:repeating-linear-gradient(0deg,#6c482e 0 8px,#886344 9px 14px,#765235 15px 18px);border:3px solid #b99b6c;box-shadow:inset 0 0 0 2px #4c3928,0 4px 7px #263b2b88}
+.plot.empty:after{width:22px;height:22px;border:1px dashed #e6d6ae;background:#d8c69a22}
+.plot.selected{outline:3px solid #f1d78e;box-shadow:0 0 0 5px #263a2c88,inset 0 0 0 2px #4c3928}
+.plot .plot-caption{font-size:9px;padding:4px 2px;background:#18251fe8;letter-spacing:.3px}
+.crop-plant svg{width:82%;height:88%;filter:drop-shadow(1px 3px 2px #18251f99)}
+.farm-map:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#d7d7b522 1px,transparent 1px);background-size:17px 17px;opacity:.45}
+.dirt-road{position:absolute;height:26px;background:#b7a17b;border-top:3px solid #cabb99;border-bottom:3px solid #968363;transform-origin:left center;opacity:.95;box-shadow:0 2px 5px #34422a44}
+.road-a{width:112%;left:-4%;top:53%;transform:rotate(-8deg)}.road-b{width:74%;left:26%;top:18%;transform:rotate(74deg)}.road-c{width:65%;left:2%;top:84%;transform:rotate(-34deg)}
+.tree-cluster{position:absolute;display:flex;gap:5px;opacity:.9}.tree{width:38px;height:54px;position:relative}.tree:before{content:"";position:absolute;bottom:0;left:16px;width:7px;height:24px;background:#594b36}.tree:after{content:"";position:absolute;left:1px;top:0;width:35px;height:37px;background:radial-gradient(ellipse at 35% 35%,#9eb47d 0 20%,transparent 22%),radial-gradient(ellipse at 65% 30%,#5d8053 0 35%,transparent 37%),radial-gradient(ellipse at 50% 70%,#416a47 0 40%,transparent 42%);filter:drop-shadow(1px 2px 1px #273d2a55)}
+.trees-a{left:1%;top:2%}.trees-b{right:2%;top:2%}.trees-c{left:2%;bottom:2%}.trees-d{right:1%;bottom:1%}
+.building{position:absolute;width:155px;height:126px;filter:drop-shadow(0 5px 4px #283c2a77);cursor:pointer;transition:filter .15s,transform .15s}
+.building:hover{filter:drop-shadow(0 8px 6px #1f302688);transform:translateY(-3px)}
+.building .ground{position:absolute;bottom:0;left:5px;width:145px;height:45px;background:#526e48;border:2px solid #405b3c;transform:skew(-17deg);border-radius:3px}
+.building .walls{position:absolute;bottom:33px;left:35px;width:87px;height:49px;background:linear-gradient(90deg,#c7b98f,#e0d3ad);border:2px solid #6d5b43}
+.building .roof{position:absolute;bottom:77px;left:24px;width:109px;height:42px;background:linear-gradient(135deg,#925d43,#b67b54);clip-path:polygon(50% 0,100% 100%,0 100%);border-bottom:3px solid #684832}
+.building .door{position:absolute;bottom:34px;left:68px;width:20px;height:34px;background:#66513c;border:2px solid #4b3c2d}
+.building .window{position:absolute;bottom:55px;left:43px;width:17px;height:14px;background:#91b3b3;border:2px solid #6e5b44}
+.building .building-name{position:absolute;top:0;left:10px;background:#26352fdf;color:#fff;padding:4px 7px;font-size:9px;font-weight:800;letter-spacing:.4px}
+.building.market .walls{background:#d2c49b}.building.shed .roof{background:linear-gradient(135deg,#6b6e60,#96947b)}
+.site-1{left:8%;top:8%}.site-2{left:38%;top:4%;transform:scale(.9)}.site-3{right:9%;top:12%;transform:scale(.88)}.site-4{left:12%;bottom:8%;transform:scale(1.05)}.site-5{left:46%;bottom:5%;transform:scale(.95)}.site-6{right:7%;bottom:8%;transform:scale(.92)}
+.plot-area{position:absolute;left:33%;top:37%;width:35%;height:28%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:9px;transform:skew(-9deg)}
+.plot{position:relative;background:repeating-linear-gradient(0deg,#77563c 0 12px,#866346 13px 17px);border:3px solid #4d583e;box-shadow:inset 0 0 0 2px #a1815b;cursor:pointer;display:grid;place-items:center;min-width:0}
+.plot:hover{outline:3px solid #e5d09b;z-index:2}.plot.selected{outline:3px solid #e5d09b;z-index:2}
+.plot.empty:after{content:"";width:18px;height:18px;border:1px dashed #e1d0a4;border-radius:50%;opacity:.7}
+.plot .crop-plant{font-size:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+.crop-plant svg{width:72%;height:80%;filter:drop-shadow(0 2px 2px #28301d88)}
+.plot .plot-caption{position:absolute;bottom:3px;left:3px;right:3px;text-align:center;background:#1d2a23cc;color:white;font-size:8px;padding:2px 1px;font-weight:800;transform:skew(9deg)}
+.plot .water-mark{position:absolute;top:3px;right:4px;color:#c5e3e7;font-size:12px}
+.map-legend{display:flex;gap:16px;align-items:center;padding:9px 12px;background:#f4f4ed;border:1px solid #c8cec2;border-top:0;font-size:10px;color:#68756b;flex-wrap:wrap}
+.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.dot-empty{background:#9b7957}.dot-growing{background:#6f9b58}.dot-ready{background:#c5a252}
+.right-panel{background:#f7f7f0;border:1px solid var(--line);padding:15px;box-shadow:var(--shadow)}
+.panel-title{font:800 13px Manrope;margin:0 0 12px}.empty-state{padding:22px;text-align:center;color:#7b867e;font-size:12px;line-height:1.7}
+.farm-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:15px}
+.selected-head{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:10px}.selected-head strong{font:800 14px Manrope}.status{font-size:9px;font-weight:800;letter-spacing:.8px;padding:4px 7px;background:#e4eadf;color:#55714e}
+.detail-row{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid #e2e4dc;font-size:11px}.detail-row span{color:#818b82}.detail-row strong{font-weight:800;text-align:right}
+.progress{height:7px;background:#e0e3d9;margin:8px 0 4px}.progress>i{display:block;height:100%;background:#6d965d;width:0}
+.action-stack{display:grid;gap:7px;margin-top:13px}.action-stack button{width:100%}
+.section-card{background:#f8f8f2;border:1px solid var(--line);box-shadow:var(--shadow);padding:17px;margin-bottom:14px}
+.market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:12px}
+.product{background:#f7f7f1;border:1px solid #d3d8ce;padding:14px;display:grid;grid-template-columns:66px 1fr;gap:12px;align-items:center}
+.product-art{height:66px;background:#e8ecdf;border:1px solid #d1d9ca;display:grid;place-items:center}
+.product-art svg{width:57px;height:57px}
+.product h3{font:800 13px Manrope;margin:0 0 4px}.product p{font-size:10px;color:#7d887e;margin:0 0 6px}.product .price{font-weight:800;color:#8d7545;font-size:11px}.product button{grid-column:1/-1;width:100%}
+.table{width:100%;border-collapse:collapse;font-size:12px}.table th{text-align:left;background:#edf0e8;color:#69766d;font-size:9px;text-transform:uppercase;letter-spacing:1px;padding:11px}.table td{padding:12px 11px;border-bottom:1px solid #e1e4dc}.table tr:last-child td{border-bottom:0}
+.task{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e0e4da}.task:last-child{border:0}.task-mark{width:30px;height:30px;border:1px solid #d3d9cb;display:grid;place-items:center;color:#607a55;font-weight:800}.task strong{font-size:12px}.task small{display:block;color:#879188;margin-top:3px;font-size:10px}
+.toast{position:fixed;bottom:22px;right:22px;background:#26342d;color:#fff;padding:13px 17px;box-shadow:var(--shadow);font-size:12px;opacity:0;transform:translateY(8px);transition:.2s;z-index:20}.toast.show{opacity:1;transform:none}
+.modal-backdrop{position:fixed;inset:0;background:#17221dc9;display:none;align-items:center;justify-content:center;z-index:30;padding:18px}.modal-backdrop.open{display:flex}
+.modal{width:min(470px,100%);background:#f8f8f1;border:1px solid #c8d0c3;box-shadow:0 20px 60px #0005;padding:22px}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.modal-head h2{font:800 17px Manrope;margin:0}.close{border:0;background:transparent;font-size:20px;color:#59665c}
+.form-row{margin:12px 0}.form-row label{display:block;font-size:10px;font-weight:800;color:#768178;margin-bottom:6px;letter-spacing:.5px}.form-row select,.form-row input{width:100%;padding:10px;background:white;border:1px solid #cfd6ca;color:#27352c}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:17px}
+@media(max-width:1100px){.sidebar{width:210px;flex-basis:210px}.farm-layout{grid-template-columns:minmax(0,1fr) 245px}.content{padding:20px}.site-1{left:3%}.site-3{right:2%}}
+@media(max-width:850px){.sidebar{width:66px;flex-basis:66px}.brand{padding:0;justify-content:center}.brand-mark{width:29px;height:29px}.brand-name,.profile-name,.profile-role,.level-line,.level-caption,.nav-label,.nav button span:last-child,.side-bottom{display:none}.profile{padding:13px 10px}.profile-top{justify-content:center}.avatar{width:40px;height:40px}.nav button{justify-content:center;padding:14px 0}.nav button .nav-icon{width:22px}.topbar{padding:0 15px}.content{padding:16px}.farm-layout{grid-template-columns:1fr}.right-panel{min-height:160px}.overview{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:580px){.farm-map{height:620px}.plot-area{left:22%;top:34%;width:56%;height:32%;gap:5px;padding:3px}.topbar{height:auto;min-height:72px;align-items:flex-start;flex-direction:column;padding:10px 13px;gap:8px}.topstats{width:100%;overflow:auto}.stat{min-width:105px;padding:7px}.stat-value{font-size:13px}.content{padding:12px}.page-head{align-items:flex-start;flex-direction:column}.page-head h1{font-size:21px}.map-legend{gap:8px}.overview{gap:7px}.kpi{padding:10px}.kpi strong{font-size:17px}.market-grid{grid-template-columns:1fr}.table{font-size:10px}.table th,.table td{padding:8px 6px}}
+</style>
+</head>
+<body>
+<div id="app">
+<aside class="sidebar">
+ <div class="brand"><div class="brand-mark"><span>MB</span></div><div class="brand-name">MEYVE BANK<small>TARIM İŞLETMESİ</small></div></div>
+ <div class="profile"><div class="profile-top"><div class="avatar">MB</div><div><div class="profile-name" id="farmerName">Çiftçi</div><div class="profile-role">İşletme sahibi</div></div></div><div class="level-line"><div class="level-fill" id="levelFill"></div></div><div class="level-caption"><span>İşletme seviyesi</span><b id="levelText">1</b></div></div>
+ <div class="nav-label">İŞLETME</div>
+ <nav class="nav">
+  <button class="active" data-page="farm"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-7h6v7"/></svg></span><span>Çiftlik arazisi</span></button>
+  <button data-page="market"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 8h16l-1 13H5L4 8Z"/><path d="M8 8a4 4 0 0 1 8 0"/></svg></span><span>Tohum ve ekipman</span></button>
+  <button data-page="warehouse"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m3 8 9-5 9 5v13H3z"/><path d="M3 8h18M8 12h8"/></svg></span><span>Depo ve ürünler</span></button>
+  <button data-page="finance"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M4 19V5m0 14h17"/><path d="m7 15 4-4 3 2 6-7"/></svg></span><span>İşletme kayıtları</span></button>
+  <button data-page="tasks"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M8 4h12v17H4V4h4Z"/><path d="M8 2v4m4 4h4m-8 4h8m-8 4h5"/></svg></span><span>Üretim planı</span></button>
+ </nav>
+ <div class="side-bottom">MEYVE BANK<br>Çiftlik yönetim sistemi · Sürüm 1.0</div>
+</aside>
+<main class="main">
+ <header class="topbar"><div class="breadcrumb">MEYVE BANK <span style="color:#b3b9af">/</span> <strong id="crumb">ÇİFTLİK ARAZİSİ</strong></div><div class="topstats">
+  <div class="stat"><div class="stat-label">Kasa bakiyesi</div><div class="stat-value" id="cash">1.000 <em>YA</em></div></div>
+  <div class="stat"><div class="stat-label">Su deposu</div><div class="stat-value" id="water">120 <em>L</em></div></div>
+  <div class="stat"><div class="stat-label">Arazi</div><div class="stat-value" id="land">6 <em>PARSEL</em></div></div>
+ </div></header>
+ <div class="content">
+  <section class="page active" id="page-farm">
+   <div class="page-head"><div><div class="eyebrow">ÜRETİM SAHASI / GENEL GÖRÜNÜM</div><h1>Çiftlik arazisi</h1><div class="subtitle">Parsellerini seç, üretim sürecini kendin yönet.</div></div><button class="btn secondary" id="openWater">Su deposunu doldur · 80 YA</button></div>
+   <div class="overview">
+    <div class="kpi"><label>Aktif üretim</label><strong id="activeCrops">0 parsel</strong><small>Ekili alanlar</small></div>
+    <div class="kpi"><label>Hasada hazır</label><strong id="readyCrops">0 parsel</strong><small>Oyuncu müdahalesi bekliyor</small></div>
+    <div class="kpi"><label>Depodaki ürün</label><strong id="storedCrops">0 adet</strong><small>Satışa hazır stok</small></div>
+    <div class="kpi"><label>Toplam hasat</label><strong id="totalHarvest">0</strong><small>Bugüne kadar</small></div>
+   </div>
+   <div class="farm-layout">
+    <div class="farm-shell">
+     <div class="farm-toolbar"><div><strong>GÜNEŞLİ VADİ · ANA ARAZİ</strong><br><span>İşletme haritası / Parsel seçimi</span></div><span id="weather">HAVA: AÇIK · 22°C</span></div>
+     <div class="farm-map">
+      <svg class="farm-map-art" viewBox="0 0 1200 680" preserveAspectRatio="xMidYMid slice" aria-label="Meyve Bank üretim sahası haritası" role="img">
+       <defs>
+        <linearGradient id="grass" x2="0" y2="1"><stop stop-color="#91aa70"/><stop offset="1" stop-color="#617f4e"/></linearGradient>
+        <linearGradient id="road" x2="0" y2="1"><stop stop-color="#d0bd91"/><stop offset=".5" stop-color="#b39a70"/><stop offset="1" stop-color="#8f7958"/></linearGradient>
+        <linearGradient id="roof" x2=".8" y2="1"><stop stop-color="#b8754c"/><stop offset="1" stop-color="#754632"/></linearGradient>
+        <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#e5d5ae"/><stop offset="1" stop-color="#bba982"/></linearGradient>
+        <pattern id="grassLines" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M4 34l5-8m7 9 4-7m9 6 3-8" stroke="#d3d9a4" stroke-opacity=".16" stroke-width="2"/></pattern>
+        <filter id="shadow"><feGaussianBlur stdDeviation="5"/></filter>
+        <g id="oak"><ellipse cx="0" cy="27" rx="31" ry="9" fill="#31472d" opacity=".3"/><path d="M-3 18v25h7V18" fill="#684b32"/><circle cx="-12" cy="0" r="19" fill="#4f7445"/><circle cx="10" cy="-8" r="23" fill="#648a4e"/><circle cx="17" cy="8" r="17" fill="#78975a"/><circle cx="-14" cy="11" r="15" fill="#587d47"/><path d="M-19-8q15-17 28-7" fill="none" stroke="#a5b982" stroke-width="4" opacity=".55"/></g>
+        <g id="smallTree"><ellipse cx="0" cy="17" rx="18" ry="6" fill="#34492e" opacity=".3"/><path d="M0 8v17" stroke="#624a32" stroke-width="5"/><circle cx="-7" cy="0" r="12" fill="#4f7546"/><circle cx="7" cy="-5" r="13" fill="#78975a"/><circle cx="8" cy="6" r="10" fill="#5c804a"/></g>
+        <g id="barn"><ellipse cx="0" cy="72" rx="90" ry="15" fill="#283c2b" opacity=".35"/><path d="M-76 15L0-29 77 15v54h-153z" fill="url(#wall)" stroke="#69533d" stroke-width="3"/><path d="M-88 16L0-42 89 16 77 25 0-22-76 25z" fill="url(#roof)" stroke="#62432f" stroke-width="3"/><path d="M-23 69V34q23-25 46 0v35z" fill="#594331" stroke="#ead7ae" stroke-width="3"/><path d="M-66 34h23v19h-23zM43 34h23v19H43z" fill="#8eb2b5" stroke="#76583c" stroke-width="3"/><path d="M-23 34L0 14 23 34" fill="none" stroke="#d6c39c" stroke-width="4"/></g>
+        <g id="fence"><path d="M0 0v30m28-30v30m28-30v30m28-30v30M-5 8h118M-5 22h118" stroke="#d4c29a" stroke-width="4" fill="none"/></g>
+       </defs>
+       <rect width="1200" height="680" fill="url(#grass)"/><rect width="1200" height="680" fill="url(#grassLines)"/>
+       <path d="M-40 510C170 405 255 460 420 350S770 260 1240 95" fill="none" stroke="#526e45" stroke-width="112" opacity=".35"/>
+       <path d="M-40 510C170 405 255 460 420 350S770 260 1240 95" fill="none" stroke="url(#road)" stroke-width="76"/>
+       <path d="M-40 510C170 405 255 460 420 350S770 260 1240 95" fill="none" stroke="#e0cea2" stroke-width="3" stroke-dasharray="24 18" opacity=".55"/>
+       <path d="M280-40C330 110 480 145 590 230S820 450 900 730" fill="none" stroke="#526e45" stroke-width="77" opacity=".3"/><path d="M280-40C330 110 480 145 590 230S820 450 900 730" fill="none" stroke="url(#road)" stroke-width="49"/>
+       <path d="M50 90L250 180 390 145 510 190" fill="none" stroke="#b99f73" stroke-width="20" opacity=".8"/>
+       <g opacity=".98"><use href="#oak" x="55" y="55"/><use href="#oak" x="118" y="70"/><use href="#oak" x="1080" y="58"/><use href="#oak" x="1140" y="125"/><use href="#oak" x="60" y="610"/><use href="#oak" x="1120" y="590"/><use href="#oak" x="1030" y="640"/><use href="#oak" x="180" y="600"/><use href="#smallTree" x="260" y="95"/><use href="#smallTree" x="930" y="90"/><use href="#smallTree" x="1040" y="245"/><use href="#smallTree" x="160" y="330"/><use href="#smallTree" x="104" y="420"/><use href="#smallTree" x="1080" y="420"/></g>
+       <g transform="translate(150 175) scale(.9)"><use href="#barn"/><text class="map-label" x="0" y="94" text-anchor="middle">İŞLETME MERKEZİ</text></g>
+       <g transform="translate(1010 170) scale(.7)"><use href="#barn"/><text class="map-label" x="0" y="105" text-anchor="middle">ÜRÜN DEPOSU</text></g>
+       <g transform="translate(940 505) scale(.62)"><use href="#barn"/><text class="map-label" x="0" y="112" text-anchor="middle">PAKETLEME TESİSİ</text></g>
+       <g transform="translate(190 500)"><ellipse cx="0" cy="28" rx="55" ry="12" fill="#354e36" opacity=".35"/><path d="M-48 0h96v34h-96z" fill="#8d714b" stroke="#4d593c" stroke-width="4"/><path d="M-56 0L0-30 56 0z" fill="#9d6140" stroke="#604531" stroke-width="3"/><path d="M-18 34V10h36v24" fill="#53412e"/><text class="map-small" x="0" y="55" text-anchor="middle">TOHUM AMBARI</text></g>
+       <g transform="translate(1040 350)"><ellipse cx="0" cy="34" rx="52" ry="12" fill="#334b35" opacity=".4"/><path d="M-38-8h76v48h-76z" fill="#8c9b83" stroke="#52634c" stroke-width="4"/><ellipse cx="0" cy="-8" rx="38" ry="11" fill="#b8c7b6" stroke="#52634c" stroke-width="4"/><ellipse cx="0" cy="40" rx="38" ry="10" fill="#718a7d" stroke="#52634c" stroke-width="3"/><path d="M0-2v36" stroke="#d4e0d3" stroke-width="3"/><text class="map-small" x="0" y="62" text-anchor="middle">SU SİSTEMİ</text></g>
+       <g transform="translate(390 115)"><use href="#fence"/><use href="#smallTree" x="20" y="-8"/><use href="#smallTree" x="72" y="-8"/><use href="#smallTree" x="124" y="-8"/><text class="map-small" x="58" y="48" text-anchor="middle">MEYVE BAHÇESİ</text></g>
+       <g transform="translate(750 120)"><path d="M0 0v100" stroke="#d7d1b7" stroke-width="8"/><circle cx="0" cy="0" r="8" fill="#e9e2cb"/><path d="M0 0L-48-18Q-28 7 0 0L34-43Q29-13 0 0L48 31Q17 21 0 0" fill="#e4e1d2" stroke="#6b785f" stroke-width="3"/><text class="map-small" x="0" y="116" text-anchor="middle">RÜZGÂR POMPASI</text></g>
+       <path d="M300 300l120-55 130 20 85-35" fill="none" stroke="#d2c49a" stroke-width="4" stroke-dasharray="9 8" opacity=".8"/>
+       <g transform="translate(80 280)"><rect x="0" y="0" width="130" height="75" rx="4" fill="#6d8b9a" stroke="#d4c89f" stroke-width="6"/><path d="M8 12q25-8 48 0t65 0M8 35q25-8 48 0t65 0" fill="none" stroke="#c6d8d4" stroke-width="3" opacity=".6"/><text class="map-small" x="65" y="93" text-anchor="middle">SULAMA GÖLETİ</text></g>
+       <g transform="translate(660 570) scale(.75)"><use href="#fence"/><text class="map-small" x="55" y="48" text-anchor="middle">GENİŞLEME ALANI</text></g>
+       <g opacity=".9"><use href="#smallTree" x="300" y="560"/><use href="#smallTree" x="360" y="585"/><use href="#smallTree" x="780" y="80"/><use href="#smallTree" x="830" y="95"/><use href="#smallTree" x="850" y="610"/></g>
+       <text class="map-label" x="600" y="30" text-anchor="middle">MEYVE BANK · ANA ÜRETİM ARAZİSİ</text>
+      </svg>
+      <div class="plot-area" id="plotArea"></div>
+     </div>
+     <div class="map-legend"><span><i class="legend-dot dot-empty"></i>Boş parsel</span><span><i class="legend-dot dot-growing"></i>Gelişiyor</span><span><i class="legend-dot dot-ready"></i>Hasada hazır</span><span>Parsel seçmek için tıklayın</span></div>
+    </div>
+    <aside class="right-panel" id="plotPanel"><div class="empty-state"><b>PARSEL SEÇİLMEDİ</b><br>İşlem yapmak istediğiniz arazi bölümünü seçin.<br><br>Her parselde ekim, sulama ve hasat işlemlerini kendiniz gerçekleştireceksiniz.</div></aside>
+   </div>
+  </section>
+  <section class="page" id="page-market">
+   <div class="page-head"><div><div class="eyebrow">TEDARİK / GİRDİ YÖNETİMİ</div><h1>Tohum ve ekipman</h1><div class="subtitle">Üretim için gerekli tohumları satın alıp deponuza alın.</div></div></div>
+   <div class="section-card"><div class="market-grid" id="marketGrid"></div></div>
+  </section>
+  <section class="page" id="page-warehouse">
+   <div class="page-head"><div><div class="eyebrow">STOK / ENVANTER</div><h1>Depo ve ürünler</h1><div class="subtitle">Hasat ettiğiniz ürünlerin stok ve satış yönetimi.</div></div></div>
+   <div class="section-card"><h3 class="panel-title">TOHUM STOKLARI</h3><div id="seedStock"></div></div>
+   <div class="section-card"><h3 class="panel-title">HASAT EDİLMİŞ ÜRÜNLER</h3><div id="fruitStock"></div></div>
+  </section>
+  <section class="page" id="page-finance">
+   <div class="page-head"><div><div class="eyebrow">MUHASEBE / HAREKET DÖKÜMÜ</div><h1>İşletme kayıtları</h1><div class="subtitle">Oyun içi Yeşil Altın hareketleri ve üretim geçmişi.</div></div></div>
+   <div class="section-card"><table class="table"><thead><tr><th>İşlem</th><th>Açıklama</th><th>Tutar</th><th>Tarih</th></tr></thead><tbody id="ledger"></tbody></table></div>
+  </section>
+  <section class="page" id="page-tasks">
+   <div class="page-head"><div><div class="eyebrow">SAHA OPERASYONLARI</div><h1>Üretim planı</h1><div class="subtitle">Çiftliğinizde tamamlanması gereken işler.</div></div></div>
+   <div class="section-card" id="taskList"></div>
+  </section>
+ </div>
+</main>
+</div>
+<div class="modal-backdrop" id="modal"><div class="modal"><div class="modal-head"><h2 id="modalTitle">İşlem</h2><button class="close" id="modalClose">×</button></div><div id="modalBody"></div><div class="modal-actions" id="modalActions"></div></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const CROPS=[
+ {id:"apple",name:"Elma",seed:85,sell:165,grow:180,water:2,yield:3,desc:"Dengeli gelişim süresi ve düzenli verim."},
+ {id:"pear",name:"Armut",seed:75,sell:145,grow:165,water:2,yield:3,desc:"Ilıman iklim koşullarına uygun."},
+ {id:"orange",name:"Portakal",seed:105,sell:205,grow:220,water:3,yield:3,desc:"Daha fazla su isteyen narenciye türü."},
+ {id:"lemon",name:"Limon",seed:90,sell:180,grow:205,water:3,yield:3,desc:"Bakım düzenine duyarlı narenciye."},
+ {id:"strawberry",name:"Çilek",seed:120,sell:235,grow:130,water:2,yield:4,desc:"Kısa sürede gelişen hassas ürün."},
+ {id:"grape",name:"Üzüm",seed:155,sell:310,grow:260,water:3,yield:4,desc:"Uzun dönemli bağ üretimi."},
+ {id:"melon",name:"Kavun",seed:145,sell:285,grow:230,water:3,yield:2,desc:"Geniş yapraklı, su ihtiyacı yüksek."},
+ {id:"watermelon",name:"Karpuz",seed:175,sell:360,grow:280,water:4,yield:2,desc:"Uzun gelişim ve yüksek su ihtiyacı."},
+ {id:"pineapple",name:"Ananas",seed:270,sell:620,grow:390,water:4,yield:2,desc:"Sıcak iklim ürünü, yüksek değerli."},
+ {id:"mango",name:"Mango",seed:330,sell:780,grow:440,water:4,yield:2,desc:"Uzun vadeli ve değerli üretim."},
+ {id:"kiwi",name:"Kivi",seed:215,sell:480,grow:350,water:3,yield:3,desc:"Düzenli bakım gerektiren ürün."},
+ {id:"dragon",name:"Ejder Meyvesi",seed:490,sell:1250,grow:520,water:2,yield:2,desc:"Nadir tohum; üretim riski daha yüksek."}
+];
+const $=id=>document.getElementById(id);
+const fresh=()=>({name:"Çiftçi",money:1500,water:120,level:1,xp:0,harvests:0,plots:Array.from({length:6},(_,i)=>({id:i+1,crop:null,plantedAt:0,lastWater:0,waterCount:0,stage:"empty",health:100})),seeds:{},stock:{},ledger:[],selected:1});
+let state;try{state={...fresh(),...JSON.parse(localStorage.getItem("meyveBankSerious")||"{}")};}catch{state=fresh()}
+let selected=state.selected||1,toastTimer;
+function save(){state.selected=selected;localStorage.setItem("meyveBankSerious",JSON.stringify(state));renderAll()}
+function money(n){return Math.floor(n).toLocaleString("tr-TR")}
+function say(t){const e=$("toast");e.textContent=t;e.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove("show"),2500)}
+function record(type,desc,amount){state.ledger.unshift({type,desc,amount,date:new Date().toLocaleString("tr-TR")});state.ledger=state.ledger.slice(0,60)}
+function crop(id){return CROPS.find(c=>c.id===id)}
+function elapsed(p){return Math.max(0,(Date.now()-p.plantedAt)/1000)}
+function progress(p){const c=crop(p.crop);if(!c)return 0;return Math.min(100,elapsed(p)/c.grow*100)}
+function isReady(p){return p.crop&&progress(p)>=100}
+function stageName(p){if(!p.crop)return"BOŞ PARSEL";if(isReady(p))return"HASADA HAZIR";if(progress(p)>55)return"MEYVE GELİŞİMİ";if(progress(p)>0)return"FİDAN GELİŞİMİ";return"YENİ EKİLDİ"}
+function plantSvg(id,stage=1){
+ const colors={apple:["#b64c3e","#6b8c4d"],pear:["#b8a85e","#71894a"],orange:["#d68c3e","#6d8e4b"],lemon:["#d6c34f","#78944d"],strawberry:["#b94f4c","#668a4a"],grape:["#725c8c","#6d8e4b"],melon:["#7d9852","#526f42"],watermelon:["#528b53","#b84b45"],pineapple:["#c69b4b","#6b8c4b"],mango:["#d18b42","#63884a"],kiwi:["#9a8a55","#67814a"],dragon:["#bb627b","#63854b"]};
+ const [fruit,leaf]=colors[id]||colors.apple;
+ const small=stage<35,medium=stage<75;
+ return `<svg viewBox="0 0 120 110" aria-hidden="true"><ellipse cx="60" cy="101" rx="43" ry="5" fill="#263b27" opacity=".35"/><path d="M60 99V39" stroke="#614b32" stroke-width="5" stroke-linecap="round"/><path d="M59 69Q27 40 18 52Q20 72 57 79M61 59Q91 28 104 41Q100 63 62 69M59 43Q38 14 27 26Q30 47 59 54" fill="${leaf}" stroke="#3e6540" stroke-width="2"/>${small?`<path d="M60 39Q48 20 40 27" stroke="${leaf}" stroke-width="5" fill="none"/>`:medium?`<circle cx="42" cy="49" r="9" fill="${fruit}" stroke="#704b35" stroke-width="1.5"/><circle cx="80" cy="53" r="8" fill="${fruit}" stroke="#704b35" stroke-width="1.5"/>`:`<circle cx="38" cy="49" r="10" fill="${fruit}" stroke="#704b35" stroke-width="1.5"/><circle cx="80" cy="45" r="10" fill="${fruit}" stroke="#704b35" stroke-width="1.5"/><circle cx="62" cy="67" r="10" fill="${fruit}" stroke="#704b35" stroke-width="1.5"/><path d="M37 43l3 2m38-5 3 2" stroke="#fff" stroke-width="2" opacity=".4"/>`}</svg>`;
+}
+function renderMap(){
+ $("plotArea").innerHTML=state.plots.map(p=>{const ready=isReady(p),pr=progress(p),c=crop(p.crop);return `<button class="plot ${p.crop?"":"empty"} ${selected===p.id?"selected":""}" data-plot="${p.id}" aria-label="Parsel ${p.id}"><div class="crop-plant">${c?plantSvg(c.id,pr):""}</div>${p.crop?`<span class="water-mark">${p.lastWater? "●":"○"}</span>`:""}<span class="plot-caption">${p.crop?c.name+" · "+Math.floor(pr)+"%":"PARSEL "+p.id}</span></button>`}).join("");
+}
+function renderPanel(){
+ const p=state.plots.find(x=>x.id===selected);if(!p){$("plotPanel").innerHTML='<div class="empty-state">Parsel seçin.</div>';return}
+ const c=crop(p.crop),pr=progress(p),ready=isReady(p);
+ if(!c){$("plotPanel").innerHTML=`<div class="selected-head"><strong>PARSEL ${p.id}</strong><span class="status">BOŞ</span></div><div class="empty-state">Bu arazi henüz ekilmedi.<br>Tohum stoğunuzdan bir ürün seçerek ekim yapabilirsiniz.</div><div class="action-stack"><button class="btn" id="plantOpen">Tohum seç ve ek</button></div>`;$("plantOpen").onclick=openPlant;return}
+ const waterDue=Date.now()-p.lastWater>60000;
+ $("plotPanel").innerHTML=`<div class="selected-head"><strong>PARSEL ${p.id} · ${c.name.toLocaleUpperCase("tr-TR")}</strong><span class="status">${stageName(p)}</span></div>
+ <div style="display:grid;place-items:center;background:#e9ecdf;height:116px;margin-bottom:12px">${plantSvg(c.id,pr)}</div>
+ <div class="detail-row"><span>Ürün çeşidi</span><strong>${c.name}</strong></div><div class="detail-row"><span>Ekim zamanı</span><strong>${new Date(p.plantedAt).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}</strong></div><div class="detail-row"><span>Sulama sayısı</span><strong>${p.waterCount} kez</strong></div><div class="detail-row"><span>Bitki sağlığı</span><strong>%${p.health}</strong></div>
+ <div style="font-size:10px;color:#7d887e;margin-top:12px">GELİŞİM DURUMU <b style="float:right;color:#35463a">%${Math.floor(pr)}</b></div><div class="progress"><i style="width:${pr}%"></i></div>
+ <div class="detail-row"><span>Hasat tahmini</span><strong>${ready?"Hazır":Math.ceil(Math.max(0,c.grow-elapsed(p)))+" sn"}</strong></div>
+ <div class="action-stack">${ready?'<button class="btn gold" id="harvestBtn">Hasadı gerçekleştir</button>':`<button class="btn" id="waterBtn" ${state.water<c.water?"disabled":""}>Parseli sula · ${c.water} L</button>`}<button class="btn secondary" id="inspectBtn">Üretim bilgisi</button><button class="btn danger" id="removeBtn">Ürünü sök ve parseli boşalt</button></div>`;
+ const wb=$("waterBtn");if(wb)wb.onclick=waterPlot;
+ const hb=$("harvestBtn");if(hb)hb.onclick=harvest;
+ $("inspectBtn").onclick=()=>say("Gelişim süreci: "+c.grow+" saniye · Su ihtiyacı: "+c.water+" litre");
+ $("removeBtn").onclick=()=>openModal("Ürünü sök",`<p>${c.name} üretimini sonlandırıp parseli boşaltmak istediğinize emin misiniz? Bu işlemde tohum geri alınmaz.</p>`,[{text:"Vazgeç",cls:"btn secondary",fn:closeModal},{text:"Parseli boşalt",cls:"btn danger",fn:()=>{p.crop=null;p.plantedAt=0;p.lastWater=0;p.waterCount=0;closeModal();say("Parsel boşaltıldı.");save()}}]);
+}
+function renderTop(){
+ $("cash").innerHTML=money(state.money)+' <em>YA</em>';$("water").innerHTML=money(state.water)+' <em>L</em>';$("land").innerHTML=state.plots.length+' <em>PARSEL</em>';
+ $("activeCrops").textContent=state.plots.filter(p=>p.crop&&!isReady(p)).length+" parsel";$("readyCrops").textContent=state.plots.filter(isReady).length+" parsel";
+ $("storedCrops").textContent=Object.values(state.stock).reduce((a,b)=>a+b,0)+" adet";$("totalHarvest").textContent=state.harvests;
+ $("levelText").textContent=state.level;$("levelFill").style.width=(state.xp%100)+"%";
+}
+function renderMarket(){
+ $("marketGrid").innerHTML=CROPS.map(c=>`<article class="product"><div class="product-art">${plantSvg(c.id,80)}</div><div><h3>${c.name} tohumu</h3><p>${c.desc}</p><div class="price">${money(c.seed)} YA / paket</div></div><button class="btn secondary" data-buy="${c.id}">Satın al</button></article>`).join("");
+ $("marketGrid").querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>{const c=crop(b.dataset.buy);if(state.money<c.seed)return say("Kasada yeterli bakiye bulunmuyor.");state.money-=c.seed;state.seeds[c.id]=(state.seeds[c.id]||0)+1;record("TOHUM ALIMI",c.name+" tohumu", -c.seed);save();say(c.name+" tohumu depoya alındı.")});
+}
+function renderWarehouse(){
+ const seeds=Object.entries(state.seeds).filter(([,n])=>n>0),stocks=Object.entries(state.stock).filter(([,n])=>n>0);
+ $("seedStock").innerHTML=seeds.length?`<table class="table"><thead><tr><th>Tohum</th><th>Stok</th><th>İşlem</th></tr></thead><tbody>${seeds.map(([id,n])=>`<tr><td>${crop(id).name}</td><td>${n} paket</td><td><button class="btn secondary" data-plant="${id}">Seçili parsele ek</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty-state">Tohum stoğunuz boş. Tedarik bölümünden tohum satın alın.</div>';
+ $("fruitStock").innerHTML=stocks.length?`<table class="table"><thead><tr><th>Ürün</th><th>Stok</th><th>Birim satış</th><th>İşlem</th></tr></thead><tbody>${stocks.map(([id,n])=>`<tr><td>${crop(id).name}</td><td>${n} adet</td><td>${money(crop(id).sell)} YA</td><td><button class="btn gold" data-sell="${id}">Ürünü sat</button></td></tr>`).join("")}</tbody></table>`:'<div class="empty-state">Henüz hasat edilmiş ürün bulunmuyor. Hasat işlemi tamamlandığında ürünler burada listelenir.</div>';
+ $("seedStock").querySelectorAll("[data-plant]").forEach(b=>b.onclick=()=>{selectedPlotForPlant=b.dataset.plant;openPlant()});
+ $("fruitStock").querySelectorAll("[data-sell]").forEach(b=>b.onclick=()=>sell(b.dataset.sell));
+}
+function renderLedger(){$("ledger").innerHTML=state.ledger.length?state.ledger.map(x=>`<tr><td>${x.type}</td><td>${x.desc}</td><td style="font-weight:800;color:${x.amount<0?"#a45d4d":"#4d7b4a"}">${x.amount<0?"−":"+"}${money(Math.abs(x.amount))} YA</td><td>${x.date}</td></tr>`).join(""):'<tr><td colspan="4" class="empty-state">Henüz işlem kaydı yok.</td></tr>'}
+function renderTasks(){const tasks=[];state.plots.forEach(p=>{if(!p.crop)tasks.push(["Parsel "+p.id,"Ekim yapılmayı bekliyor."]);else if(isReady(p))tasks.push(["Parsel "+p.id,crop(p.crop).name+" hasada hazır."]);else if(Date.now()-p.lastWater>60000)tasks.push(["Parsel "+p.id,crop(p.crop).name+" için sulama kontrolü yapın."]) });$("taskList").innerHTML=tasks.length?tasks.map(t=>`<div class="task"><div class="task-mark">!</div><div><strong>${t[0]}</strong><small>${t[1]}</small></div></div>`).join(""):'<div class="empty-state">Şu anda bekleyen saha işlemi görünmüyor.</div>'}
+function renderAll(){renderTop();renderMap();renderPanel();renderMarket();renderWarehouse();renderLedger();renderTasks()}
+function openModal(title,body,actions){$("modalTitle").textContent=title;$("modalBody").innerHTML=body;$("modalActions").innerHTML="";actions.forEach(a=>{const b=document.createElement("button");b.className=a.cls||"btn";b.textContent=a.text;b.onclick=a.fn;$("modalActions").appendChild(b)});$("modal").classList.add("open")}
+function closeModal(){$("modal").classList.remove("open")}
+$("modalClose").onclick=closeModal;$("modal").onclick=e=>{if(e.target===$("modal"))closeModal()}
+let selectedPlotForPlant=null;
+function openPlant(){
+ const p=state.plots.find(x=>x.id===selected);if(p.crop)return say("Bu parsel dolu. Önce mevcut üretimi tamamlayın veya parseli boşaltın.");
+ const available=CROPS.filter(c=>(state.seeds[c.id]||0)>0);
+ if(!available.length){closeModal();return say("Tohum stoğunuz bulunmuyor. Önce pazardan tohum alın.")}
+ const options=available.map(c=>`<option value="${c.id}">${c.name} · Stok ${state.seeds[c.id]} · ${c.grow} sn gelişim</option>`).join("");
+ openModal("Ekim işlemi",`<p style="font-size:12px;color:#748076">Parsel ${selected} için ekilecek tohumu seçin. Ekim yapıldığında tohum stoktan düşer ve gelişim süreci başlar.</p><div class="form-row"><label>TOHUM ÇEŞİDİ</label><select id="seedChoice">${options}</select></div><div class="form-row"><label>EKİM BİLGİSİ</label><div id="seedInfo" style="font-size:11px;color:#657267"></div></div>`,[{text:"İptal",cls:"btn secondary",fn:closeModal},{text:"Tohumu ek",cls:"btn",fn:plant}]);
+ $("seedChoice").onchange=updateSeedInfo;updateSeedInfo();
+}
+function updateSeedInfo(){const c=crop($("seedChoice").value);$("seedInfo").textContent=`Tahmini gelişim: ${c.grow} saniye · Sulama ihtiyacı: ${c.water} litre / işlem · Hasat miktarı: ${c.yield} ürün`;}
+function plant(){const id=$("seedChoice").value,p=state.plots.find(x=>x.id===selected);if(!p||p.crop)return closeModal();if(!state.seeds[id])return say("Seçilen tohum stokta bulunmuyor.");state.seeds[id]--;p.crop=id;p.plantedAt=Date.now();p.lastWater=Date.now();p.waterCount=0;p.health=100;record("EKİM",crop(id).name+" tohumu · Parsel "+p.id,0);closeModal();save();say(crop(id).name+" tohumu parsele ekildi. Gelişimi takip edin.");}
+function waterPlot(){const p=state.plots.find(x=>x.id===selected),c=crop(p.crop);if(!p||!c||isReady(p))return;if(state.water<c.water)return say("Su deposunda yeterli su bulunmuyor.");if(Date.now()-p.lastWater<15000)return say("Bu parsel kısa süre önce sulandı. Biraz bekleyin.");state.water-=c.water;p.lastWater=Date.now();p.waterCount++;p.health=Math.min(100,p.health+3);record("SULAMA",c.name+" · Parsel "+p.id+" · "+c.water+" L",0);save();say("Parsel sulandı. Su deposundan "+c.water+" litre kullanıldı.");}
+function harvest(){const p=state.plots.find(x=>x.id===selected),c=crop(p.crop);if(!p||!c||!isReady(p))return say("Ürün henüz hasada hazır değil.");const count=c.yield;state.stock[c.id]=(state.stock[c.id]||0)+count;state.harvests+=count;state.xp+=20;if(state.xp>=100){state.level++;state.xp-=100;say("İşletme seviyesi yükseldi.");}record("HASAT",c.name+" · Parsel "+p.id+" · "+count+" adet",0);p.crop=null;p.plantedAt=0;p.lastWater=0;p.waterCount=0;p.health=100;save();say("Hasat tamamlandı. "+count+" adet "+c.name+" depoya kaldırıldı.");}
+function sell(id){const n=state.stock[id]||0;if(!n)return say("Satılacak ürün bulunmuyor.");const total=n*crop(id).sell;state.money+=total;state.stock[id]=0;record("ÜRÜN SATIŞI",crop(id).name+" · "+n+" adet",total);save();say(n+" adet ürün satıldı. +"+money(total)+" YA");}
+$("plotArea").onclick=e=>{const b=e.target.closest("[data-plot]");if(!b)return;selected=+b.dataset.plot;save()};
+$("plotPanel").onclick=e=>{if(e.target.id==="plantOpen")openPlant()};
+$("openWater").onclick=()=>openModal("Su deposu",'<p>Su deposuna 80 litre eklemek için 80 Yeşil Altın harcanır. Bu bakiye yalnızca oyun içi para birimidir.</p>',[{text:"Vazgeç",cls:"btn secondary",fn:closeModal},{text:"Depoyu doldur · 80 YA",cls:"btn",fn:()=>{if(state.money<80)return say("Yeterli bakiye yok.");state.money-=80;state.water+=80;record("SU TEDARİĞİ","80 litre su",-80);closeModal();save();say("Su deposu dolduruldu.")}}]);
+document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));$("page-"+b.dataset.page).classList.add("active");$("crumb").textContent=b.textContent.trim().toLocaleUpperCase("tr-TR")});
+function tick(){const before=state.plots.map(p=>isReady(p));renderTop();renderMap();renderPanel();renderTasks();if(state.plots.some((p,i)=>!before[i]&&isReady(p)))say("Bir parsel hasada hazır. Hasat için parseli seçin.");}
+renderAll();setInterval(tick,1000);
+</script>
+</body></html>
