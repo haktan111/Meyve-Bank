@@ -1,376 +1,513 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Meyve Bank</title>
-<style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body { margin: 0; font-family: "Trebuchet MS", Arial, sans-serif; background: #1c2833; color: #fff; }
-  button { font-family: inherit; font-weight: bold; color: #fff; border: none; border-radius: 10px; padding: 10px 14px; font-size: 15px; background: #c0786a; box-shadow: 0 4px 0 #8d4f44; }
-  button:active { transform: translateY(4px); box-shadow: none; }
-  button:disabled { background: #7f8c8d; box-shadow: 0 4px 0 #566061; }
-
-  /* GİRİŞ */
-  #giris { min-height: 100vh; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 16px;
-    background: linear-gradient(#64b5f6 0%, #bbdefb 45%, #8bc34a 45%, #558b2f 100%); }
-  .bulut { position: absolute; font-size: 60px; opacity: .9; animation: kay 30s linear infinite; }
-  @keyframes kay { from { transform: translateX(-120px); } to { transform: translateX(120vw); } }
-  .karakter { position: absolute; bottom: 4%; animation: zipla 2s ease-in-out infinite; filter: drop-shadow(0 8px 6px rgba(0,0,0,.3)); }
-  .k1 { left: -6px; font-size: 110px; } .k2 { right: -6px; font-size: 110px; animation-delay: .5s; }
-  .k3 { left: 70px; bottom: 1%; font-size: 50px; animation-delay: 1s; } .k4 { right: 70px; bottom: 1%; font-size: 50px; animation-delay: 1.5s; }
-  @keyframes zipla { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-16px) rotate(4deg); } }
-  .kart { position: relative; z-index: 2; width: 100%; max-width: 330px; background: #fff; color: #333; border-radius: 14px; padding: 18px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); margin-top: 50px; }
-  .logo { width: 110px; height: 110px; margin: -70px auto 8px; border-radius: 50%; background: #c62828; border: 5px solid #ef9a9a; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 10px rgba(0,0,0,.3); }
-  .logo small { font-size: 11px; letter-spacing: 1px; color: #fff; font-weight: bold; margin-top: -2px; }
-  .sekmeler { display: flex; gap: 6px; margin: 6px 0 10px; }
-  .sekmeler button { flex: 1; background: #e0e0e0; color: #555; box-shadow: none; }
-  .sekmeler button.aktif { background: #c62828; color: #fff; }
-  .kart input { width: 100%; padding: 12px; margin: 5px 0; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; }
-  .kart .ana { width: 100%; margin-top: 8px; font-size: 16px; padding: 12px; }
-  #mesaj { color: #c62828; font-weight: bold; margin-top: 8px; font-size: 14px; }
-
-  /* OYUN */
-  #oyun { display: none; min-height: 100vh; padding-bottom: 70px; }
-  .ustbar { position: sticky; top: 0; z-index: 5; background: #17202a; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 2px solid #2e4053; }
-  .ustbar .ad { font-size: 16px; font-weight: bold; }
-  .ustbar .parabar { background: #f9a825; color: #3e2723; border-radius: 20px; padding: 6px 14px; font-weight: bold; }
-  .gorunum { display: none; } .gorunum.aktif { display: block; }
-
-  .arazi { position: relative; height: 520px; overflow: hidden; background:
-    radial-gradient(circle at 20% 30%, rgba(0,0,0,.08) 0 40px, transparent 41px),
-    radial-gradient(circle at 70% 70%, rgba(0,0,0,.08) 0 50px, transparent 51px),
-    linear-gradient(#7cb342, #558b2f); }
-  .yol { position: absolute; left: 0; right: 0; height: 26px; background: #c9a36b; opacity: .75; border-radius: 20px; }
-  .agaclar { position: absolute; font-size: 34px; }
-  .bina { position: absolute; transform: translate(-50%, -50%); background: none; box-shadow: none; padding: 0; text-align: center; color: #fff; }
-  .bina:active { transform: translate(-50%, -46%); }
-  .bina .b-simge { font-size: 68px; display: block; filter: drop-shadow(0 6px 4px rgba(0,0,0,.4)); animation: nefes 3s ease-in-out infinite; }
-  @keyframes nefes { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
-  .bina .b-ad { background: rgba(0,0,0,.6); border-radius: 10px; padding: 3px 10px; font-size: 14px; }
-  .rozet { position: absolute; top: -8px; right: -8px; background: #e53935; color: #fff; border-radius: 12px; min-width: 24px; padding: 2px 7px; font-size: 13px; }
-
-  .sayfa { padding: 14px; }
-  .sayfa h2 { margin: 4px 0 12px; }
-  .izgara { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .mkart { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 10px; text-align: center; }
-  .mkart .ad { font-size: 14px; color: #d6eaf8; margin-bottom: 4px; }
-  .mkart .gorsel { height: 96px; display: flex; align-items: flex-end; justify-content: center; background: linear-gradient(transparent 60%, #4caf50 60%); border-radius: 10px; }
-  .mkart .gorsel span { font-size: 64px; animation: zipla 2.4s ease-in-out infinite; }
-  .mkart .gorsel img { max-height: 92px; }
-  .mkart .stok { font-size: 12px; color: #aab7b8; margin: 6px 0; background: #17202a; border-radius: 6px; padding: 3px; }
-  .mkart button { width: 100%; font-size: 14px; }
-  .bos { color: #aab7b8; text-align: center; padding: 30px 0; grid-column: 1 / -1; }
-
-  .banka { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 12px; }
-  .banka .buyuk { font-size: 30px; font-weight: bold; color: #f9a825; }
-  #toplaBtn { width: 100%; margin-top: 12px; font-size: 20px; padding: 14px; background: #f9a825; box-shadow: 0 5px 0 #f57f17; color: #3e2723; }
-  #toplaBtn.hazir { animation: nabiz 1.1s ease-in-out infinite; }
-  @keyframes nabiz { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-  .sigorta { display: flex; align-items: center; gap: 10px; text-align: left; background: #212f3d; border: 2px solid #2e86c1; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 14px; }
-  .sigorta input { width: 26px; height: 26px; flex: none; }
-  .olaykutu { background: #212f3d; border: 2px solid #2e4053; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 14px; line-height: 1.5; }
-  .olaykutu div { padding: 3px 0; }
-
-  .alt { position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; display: flex; background: #17202a; border-top: 2px solid #2e4053; }
-  .alt button { flex: 1; background: none; box-shadow: none; border-radius: 0; padding: 10px 0; font-size: 12px; color: #aab7b8; }
-  .alt button span { display: block; font-size: 22px; }
-  .alt button.aktif { color: #fff; background: #2e86c1; }
-
-  .ucan { position: fixed; z-index: 20; pointer-events: none; font-weight: bold; font-size: 22px; color: #ffd54f; text-shadow: 0 2px 4px #000; animation: yuksel 1.1s ease-out forwards; }
-  .ucan.kirmizi { color: #ef5350; }
-  @keyframes yuksel { from { opacity: 1; transform: translate(-50%, 0) scale(1); } to { opacity: 0; transform: translate(-50%, -90px) scale(1.4); } }
-  #toast { position: fixed; top: 64px; left: 12px; right: 12px; z-index: 30; background: #fff8e1; color: #3e2723; border: 3px solid #ffb300; border-radius: 14px; padding: 12px; font-size: 14px; line-height: 1.5; box-shadow: 0 8px 20px rgba(0,0,0,.4); display: none; }
-  #oyunMesaj { color: #ff8a80; font-weight: bold; text-align: center; padding: 6px 14px; }
-  .cikis { margin: 16px auto; display: block; background: #566573; box-shadow: 0 4px 0 #34495e; }
-</style>
-</head>
-<body>
-
-<div id="giris">
-  <div class="bulut" style="top:6%">☁️</div>
-  <div class="bulut" style="top:18%; animation-delay:-14s">☁️</div>
-  <div class="karakter k1">🍌</div>
-  <div class="karakter k2">🌶️</div>
-  <div class="karakter k3">🍅</div>
-  <div class="karakter k4">🥕</div>
-  <div class="kart">
-    <div class="logo">🍎<small>MEYVE BANK</small></div>
-    <div class="sekmeler">
-      <button id="sekGiris" class="aktif">Giriş</button>
-      <button id="sekKayit">Kayıt</button>
-    </div>
-    <input id="ad" type="text" placeholder="Çiftçi adın" maxlength="16" style="display:none">
-    <input id="eposta" type="email" placeholder="E-Mail Adresiniz">
-    <input id="sifre" type="password" placeholder="Şifreniz (en az 6)">
-    <button id="anaBtn" class="ana" style="background:#1e88e5; box-shadow:0 4px 0 #1565c0">Giriş Yap</button>
-    <div id="mesaj"></div>
-  </div>
-</div>
-
-<div id="toast"></div>
-
-<div id="oyun">
-  <div class="ustbar">
-    <div class="ad">🍎 <span id="ciftci">Çiftçi</span></div>
-    <div class="parabar">💰 <span id="para">0</span></div>
-  </div>
-
-  <div id="v-harita" class="gorunum aktif">
-    <div class="arazi">
-      <div class="yol" style="top:28%; transform: rotate(-3deg)"></div>
-      <div class="yol" style="top:62%; transform: rotate(3deg)"></div>
-      <span class="agaclar" style="left:6%; top:8%">🌳</span>
-      <span class="agaclar" style="right:8%; top:10%">🌲</span>
-      <span class="agaclar" style="left:10%; top:48%">🌲</span>
-      <span class="agaclar" style="right:6%; top:46%">🌳</span>
-      <span class="agaclar" style="left:6%; bottom:4%">🌲</span>
-      <span class="agaclar" style="right:10%; bottom:5%">🌳</span>
-      <button class="bina" data-git="bahce" style="left:28%; top:20%"><span class="b-simge">🏡</span><span class="b-ad">Bahçem</span><span class="rozet" id="r-bahce">0</span></button>
-      <button class="bina" data-git="pazar" style="left:72%; top:35%"><span class="b-simge">🏪</span><span class="b-ad">Pazar</span></button>
-      <button class="bina" data-git="banka" style="left:30%; top:62%"><span class="b-simge">🏦</span><span class="b-ad">Banka</span><span class="rozet" id="r-banka" style="display:none">!</span></button>
-      <button class="bina" data-git="bahce" style="left:74%; top:78%"><span class="b-simge">⚡</span><span class="b-ad"><span id="saniyelik">0</span> /sn</span></button>
-    </div>
-  </div>
-
-  <div id="v-bahce" class="gorunum"><div class="sayfa"><h2>🏡 Bahçem</h2><div class="izgara" id="bahceListe"></div></div></div>
-
-  <div id="v-pazar" class="gorunum"><div class="sayfa">
-    <h2>🏪 Pazar</h2>
-    <div class="olaykutu">Aynı meyveden her aldığında sonraki fiyatı %8 artar. Ağaçların her an böcek, dolu ya da hırsız yüzünden zarar görebilir.</div>
-    <div class="izgara" id="magaza"></div>
-  </div></div>
-
-  <div id="v-banka" class="gorunum"><div class="sayfa">
-    <h2>🏦 Banka</h2>
-    <div class="banka">
-      <div>Biriken tahmini kazanç</div>
-      <div class="buyuk">💰 <span id="birikim">0</span></div>
-      <small>En fazla 8 saatlik kazanç birikir. Toplarken olaylar kazancı artırabilir ya da azaltabilir.</small>
-      <button id="toplaBtn">💰 Kazancı Topla</button>
-    </div>
-    <label class="sigorta">
-      <input type="checkbox" id="sigortaKutu">
-      <span>🛡️ <b>Sigorta</b>: Kazancının %20'sini keser ama dolu, hırsız ve böcek istilasından korur.</span>
-    </label>
-    <div class="olaykutu" id="olaylar">Henüz olay yok. Kazancı topladığında burada neler olduğunu göreceksin.</div>
-    <div id="oyunMesaj"></div>
-    <button id="cikisBtn" class="cikis">Çıkış</button>
-  </div></div>
-
-  <div class="alt">
-    <button data-git="harita" class="aktif"><span>🗺️</span>Çiftlik</button>
-    <button data-git="bahce"><span>🏡</span>Bahçem</button>
-    <button data-git="pazar"><span>🏪</span>Pazar</button>
-    <button data-git="banka"><span>🏦</span>Banka</button>
-  </div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-
-const app = initializeApp({
-  apiKey: "AIzaSyBegnG3ID_DNMAwb8HyDmAMbXz7w_vsEdk",
-  authDomain: "meyve-bank.firebaseapp.com",
-  projectId: "meyve-bank",
-  storageBucket: "meyve-bank.firebasestorage.app",
-  messagingSenderId: "470001117128",
-  appId: "1:470001117128:web:8bb1fcc194ac19e97442fd"
-});
-const auth = getAuth(app);
-const db = getFirestore(app);
-const $ = (id) => document.getElementById(id);
-
-// resim: karakter resmi eklersen dosya adını yaz (örn. "muz.png"), boşsa emoji görünür
-const MEYVELER = [
-  { id: "elma",     ad: "Elma",        simge: "🍎", resim: "", fiyat: 1000,      gelir: 1 },
-  { id: "havuc",    ad: "Havuç Adam",  simge: "🥕", resim: "", fiyat: 5000,      gelir: 6 },
-  { id: "muz",      ad: "Muz Adam",    simge: "🍌", resim: "", fiyat: 25000,     gelir: 35 },
-  { id: "domates",  ad: "Domates",     simge: "🍅", resim: "", fiyat: 100000,    gelir: 150 },
-  { id: "biber",    ad: "Biber Adam",  simge: "🌶️", resim: "", fiyat: 400000,    gelir: 650 },
-  { id: "patlican", ad: "Patlıcan",    simge: "🍆", resim: "", fiyat: 1500000,   gelir: 2800 },
-  { id: "misir",    ad: "Mısır",       simge: "🌽", resim: "", fiyat: 6000000,   gelir: 12000 },
-  { id: "karpuz",   ad: "Karpuz",      simge: "🍉", resim: "", fiyat: 25000000,  gelir: 55000 }
-];
-const MAX_SANIYE = 8 * 60 * 60;
-const BASLANGIC_PARA = 10000;
-const FIYAT_ARTIS = 1.08;
-const DONEM = 1800;      // 30 dakikalık dönemler
-const OLAY_SANSI = 0.45; // bir dönemde olay olma ihtimali
-const SURUM = 2;
-const OLAYLAR = [
-  { id: "altin", w: 5 }, { id: "bol", w: 12 }, { id: "dolu", w: 15 },
-  { id: "hirsiz", w: 8 }, { id: "bocek", w: 5 }
-];
-
-let uid = null;
-let durum = { ad: "", para: 0, agaclar: {}, son: Date.now(), sigorta: false, v: SURUM };
-let sonImza = "";
-let mod = "giris";
-
-const sayi = (n) => Math.floor(n).toLocaleString("tr-TR");
-const gorsel = (m) => m.resim ? `<img src="${m.resim}" alt="${m.ad}">` : `<span>${m.simge}</span>`;
-const adet = (m) => durum.agaclar[m.id] || 0;
-const fiyatAl = (m) => Math.round(m.fiyat * Math.pow(FIYAT_ARTIS, adet(m)));
-
-const HATALAR = {
-  "auth/email-already-in-use": "Bu e-posta zaten kayıtlı. Giriş sekmesini kullan.",
-  "auth/invalid-credential": "E-posta ya da şifre yanlış.",
-  "auth/invalid-email": "E-posta adresi geçersiz.",
-  "auth/weak-password": "Şifre en az 6 karakter olmalı.",
-  "auth/missing-password": "Şifreni yaz.",
-  "auth/too-many-requests": "Çok fazla deneme yaptın, biraz bekle."
-};
-function hata(x) {
-  const m = HATALAR[x.code] || x.message;
-  $("mesaj").textContent = m;
-  $("oyunMesaj").textContent = m;
-}
-
-function saniyelikGelir() { return MEYVELER.reduce((t, m) => t + adet(m) * m.gelir, 0); }
-function birikim() {
-  const gecen = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
-  return Math.max(0, gecen) * saniyelikGelir() * (durum.sigorta ? 0.8 : 1);
-}
-
-function ucur(metin, el, kirmizi) {
-  const r = el.getBoundingClientRect();
-  const d = document.createElement("div");
-  d.className = "ucan" + (kirmizi ? " kirmizi" : "");
-  d.textContent = metin;
-  d.style.left = (r.left + r.width / 2) + "px";
-  d.style.top = r.top + "px";
-  document.body.appendChild(d);
-  setTimeout(() => d.remove(), 1100);
-}
-
-let toastZaman;
-function bildir(satirlar) {
-  if (!satirlar.length) return;
-  $("toast").innerHTML = satirlar.slice(0, 5).map((s) => `<div>${s}</div>`).join("") +
-    (satirlar.length > 5 ? `<div>... ve ${satirlar.length - 5} olay daha (Bankada)</div>` : "");
-  $("toast").style.display = "block";
-  clearTimeout(toastZaman);
-  toastZaman = setTimeout(() => { $("toast").style.display = "none"; }, 5000);
-}
-
-function agacKaybet() {
-  const liste = [];
-  MEYVELER.forEach((m) => { for (let i = 0; i < adet(m); i++) liste.push(m); });
-  if (!liste.length) return null;
-  const m = liste[Math.floor(Math.random() * liste.length)];
-  durum.agaclar[m.id] = adet(m) - 1;
-  return m;
-}
-
-// Birikmiş kazancı hesaplar, rastgele olayları uygular, parayı ekler
-function hasat() {
-  let kalan = Math.min((Date.now() - durum.son) / 1000, MAX_SANIYE);
-  kalan = Math.max(0, kalan);
-  const olaylar = [];
-  let toplam = 0;
-  const kesinti = durum.sigorta ? 0.8 : 1;
-  while (kalan > 0.001) {
-    const sure = Math.min(DONEM, kalan);
-    kalan -= sure;
-    let kazanc = sure * saniyelikGelir() * kesinti;
-    if (Math.random() < OLAY_SANSI * sure / DONEM) {
-      let r = Math.random() * 45, olay = "bol";
-      for (const o of OLAYLAR) { if (r < o.w) { olay = o.id; break; } r -= o.w; }
-      const kotu = olay === "dolu" || olay === "hirsiz" || olay === "bocek";
-      if (kotu && durum.sigorta) {
-        const ad = { dolu: "dolu", hirsiz: "hırsız", bocek: "böcek istilası" }[olay];
-        olaylar.push(`🛡️ Sigorta seni ${ad} olayından korudu.`);
-      } else if (olay === "altin") {
-        kazanc *= 3; olaylar.push("🌟 Altın hasat! Bu dönemin kazancı 3 katına çıktı.");
-      } else if (olay === "bol") {
-        kazanc *= 1.5; olaylar.push("🌞 Bol hasat! Bu dönemin kazancı %50 arttı.");
-      } else if (olay === "dolu") {
-        kazanc *= 0.5; olaylar.push("🌨️ Dolu yağdı! Bu dönemin kazancı yarıya düştü.");
-      } else if (olay === "hirsiz") {
-        kazanc = 0; olaylar.push("🦹 Hırsız girdi! Bu dönemin kazancı çalındı.");
-      } else if (olay === "bocek") {
-        const kayip = agacKaybet();
-        if (kayip) olaylar.push(`🐛 Böcek istilası! 1 ${kayip.ad} kurudu.`);
-      }
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#102b1c">
+    <title>Meyve Bank — Kendi Çiftliğini Kur</title>
+    <style>
+    :root{
+      --bg:#0b1d14;--panel:#142d20;--panel2:#1b3b29;--line:#31583d;
+      --green:#3e8b4e;--green2:#70b85b;--gold:#f4c64e;--gold2:#d99b24;
+      --cream:#fff5d9;--muted:#b8c9b6;--red:#d96b5f;--blue:#70b7d5;
+      --shadow:0 12px 30px #0006;
     }
-    toplam += kazanc;
-  }
-  durum.para += toplam;
-  durum.son = Date.now();
-  return { toplam, olaylar };
-}
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    body{margin:0;background:radial-gradient(ellipse at top,#1c472d 0,#0b1d14 55%);color:#f7f7e9;font-family:system-ui,-apple-system,"Trebuchet MS",Arial,sans-serif;min-height:100vh}
+    button,input{font:inherit}button{cursor:pointer;border:0}
+    .hidden{display:none!important}
+    #authScreen{min-height:100vh;display:grid;place-items:center;padding:24px 16px;position:relative;overflow:hidden;background:linear-gradient(180deg,#7bc7df 0%,#c9e8a5 45%,#568c43 46%,#1d4b2b 100%)}
+    .auth-cloud{position:absolute;font-size:56px;opacity:.7;animation:cloud 35s linear infinite;pointer-events:none}
+    .auth-cloud.c1{top:8%;left:-80px}.auth-cloud.c2{top:20%;left:35%;animation-delay:-16s}
+    @keyframes cloud{to{transform:translateX(130vw)}}
+    .auth-mascot{position:absolute;bottom:2%;font-size:clamp(75px,18vw,145px);filter:drop-shadow(0 12px 6px #172a1b66);animation:bob 3s ease-in-out infinite}
+    .auth-mascot.left{left:-10px}.auth-mascot.right{right:-10px;animation-delay:-1.2s}
+    @keyframes bob{50%{transform:translateY(-14px) rotate(3deg)}}
+    .auth-card{position:relative;z-index:2;width:min(100%,390px);background:#fff9e9;color:#243729;border:4px solid #e5bd4a;border-radius:25px;padding:24px 20px 20px;box-shadow:0 18px 45px #14281766;text-align:center}
+    .brand-mark{width:92px;height:92px;margin:-62px auto 10px;border-radius:26px;background:linear-gradient(145deg,#f5d65d,#d59a23);border:4px solid #fff4c8;display:grid;place-items:center;font-size:48px;box-shadow:0 7px 15px #0003;transform:rotate(-5deg)}
+    .auth-card h1{margin:4px 0 0;font-size:28px;letter-spacing:1px;color:#1e512f}
+    .auth-card .tagline{margin:5px 0 17px;color:#63735e;font-size:13px}
+    .auth-tabs{display:flex;gap:8px;margin-bottom:12px}
+    .auth-tabs button{flex:1;padding:11px;border-radius:11px;background:#e9eadc;color:#50604c;font-weight:800}
+    .auth-tabs button.active{background:#28633a;color:white}
+    .field{width:100%;padding:13px 14px;margin:5px 0;border:2px solid #d9dfce;border-radius:11px;background:white;color:#26392a;outline:none}
+    .field:focus{border-color:#438b4d}
+    .primary{background:linear-gradient(180deg,#f5d35b,#dba52c);color:#3d2d0c;font-weight:900;box-shadow:0 4px 0 #a87517}
+    .primary:active,.green-btn:active,.soft-btn:active{transform:translateY(2px);box-shadow:none}
+    .auth-submit{width:100%;padding:14px;border-radius:12px;margin-top:10px;font-size:16px}
+    .auth-message{min-height:20px;margin-top:10px;font-size:13px;font-weight:700;color:#b34738;line-height:1.4}
+    .auth-note{font-size:11px;color:#78806d;margin-top:12px;line-height:1.5}
+    #app{min-height:100vh;padding-bottom:82px}
+    .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;background:#0c2117ed;backdrop-filter:blur(12px);border-bottom:1px solid #31583d}
+    .brand-small{font-weight:1000;letter-spacing:.6px;color:var(--gold);font-size:16px;white-space:nowrap}
+    .player-chip{display:flex;align-items:center;gap:8px;min-width:0}
+    .avatar{width:34px;height:34px;display:grid;place-items:center;background:#e7b83d;border-radius:12px;font-size:21px}
+    .player-name{font-weight:800;max-width:105px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px}
+    .level{font-size:10px;color:var(--muted)}
+    .wallet{background:#3b3217;border:1px solid #92752a;border-radius:30px;padding:8px 11px;color:#ffdc68;font-weight:900;white-space:nowrap;font-size:13px}
+    main{max-width:1050px;margin:auto;padding:14px}
+    .page{display:none;animation:appear .2s ease}.page.active{display:block}
+    @keyframes appear{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:none}}
+    .hero{position:relative;overflow:hidden;border:1px solid #557b42;border-radius:20px;padding:19px;background:linear-gradient(120deg,#285c36,#173a28 60%,#6a7130);box-shadow:var(--shadow);min-height:145px}
+    .hero:after{content:"🌳  🌲  🍃";position:absolute;right:6px;bottom:3px;font-size:45px;opacity:.65}
+    .hero h2{margin:0 0 6px;font-size:23px;color:#ffe18a;max-width:75%}
+    .hero p{margin:0;color:#e2eedb;font-size:13px;line-height:1.5;max-width:75%}
+    .hero-mascots{position:absolute;right:12px;top:13px;font-size:39px;display:flex;gap:0;filter:drop-shadow(0 4px 3px #0005)}
+    .section-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:20px 2px 11px}
+    .section-title h2{font-size:19px;margin:0;color:#f7d978}
+    .muted{color:var(--muted);font-size:12px}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+    .stat{background:#153323;border:1px solid #31583d;border-radius:14px;padding:12px 9px;text-align:center}
+    .stat .ico{font-size:21px}.stat strong{display:block;color:#ffdb6a;font-size:16px;margin-top:3px}.stat small{color:#b6c9b4;font-size:10px}
+    .panel{background:linear-gradient(145deg,#173625,#11291c);border:1px solid var(--line);border-radius:17px;padding:14px;box-shadow:0 7px 18px #0002}
+    .farm-scene{position:relative;min-height:220px;border-radius:16px;overflow:hidden;border:2px solid #577b3e;background:linear-gradient(#8ac6db 0 24%,#679d47 24% 100%);padding:16px}
+    .farm-scene:before{content:"☀️";position:absolute;right:20px;top:10px;font-size:34px}
+    .farm-decor{font-size:27px;position:absolute;top:28%;left:5%;right:5%;display:flex;justify-content:space-between;opacity:.9}
+    .plot-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:65px}
+    .plot{min-height:91px;border:2px solid #9d7440;border-radius:12px;background:linear-gradient(#9c7042,#714a2c);padding:8px 4px;text-align:center;color:#fff4d7;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;box-shadow:inset 0 3px 0 #ffffff1a}
+    .plot.empty{background:linear-gradient(#a77b4a,#78502f)}
+    .plot.locked{background:#33453a;border-color:#59685b;color:#9aa99a}
+    .plot .plant{font-size:29px;line-height:1.2}.plot b{font-size:11px}.plot small{font-size:10px;color:#f6dfad}
+    .plot button{margin-top:3px;padding:5px 8px;border-radius:7px;font-size:10px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .item-card{background:#183725;border:1px solid #355d40;border-radius:15px;padding:11px;text-align:center;min-width:0}
+    .item-icon{height:72px;display:grid;place-items:center;font-size:48px;background:linear-gradient(180deg,#254a31,#142c1d);border-radius:11px;margin-bottom:8px}
+    .item-card h3{font-size:14px;margin:3px 0;color:#f6e7b7}
+    .item-card p{font-size:11px;color:#b9cbb6;margin:4px 0 9px;line-height:1.4;min-height:29px}
+    .item-meta{font-size:11px;color:#e6ca75;margin:5px 0}
+    .green-btn,.soft-btn,.danger-btn{width:100%;padding:10px 8px;border-radius:10px;font-size:12px;font-weight:900;margin-top:5px}
+         .green-btn{background:linear-gradient(#65ad59,#367a43);color:white;box-shadow:0 3px 0 #20542d}
+    .soft-btn{background:#284a35;color:#e5eecf;border:1px solid #557c54}
+    .danger-btn{background:#63372f;color:#ffe2d9;border:1px solid #a35b4c}
+    button:disabled{opacity:.42;filter:grayscale(.5);cursor:not-allowed}
+    .action-row{display:flex;gap:8px;flex-wrap:wrap}.action-row>*{flex:1}
+    .progress{height:8px;background:#0b1b12;border-radius:9px;overflow:hidden;margin:6px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#8acb5d,#f0cf59);border-radius:9px}
+    .notice{padding:12px;border-radius:13px;background:#293d26;border:1px solid #6b783d;color:#e7e8c2;font-size:12px;line-height:1.55;margin:10px 0}
+    .notice.warn{background:#49351f;border-color:#9c7135;color:#ffe6ad}
+    .notice.danger{background:#492b28;border-color:#8e4b43;color:#ffd8ce}
+    .notice.good{background:#183e2c;border-color:#418454;color:#d9f4d4}
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:25;display:grid;grid-template-columns:repeat(5,1fr);padding:6px 5px calc(6px + env(safe-area-inset-bottom));background:#0b2016f5;backdrop-filter:blur(12px);border-top:1px solid #355d40}
+    .bottom-nav button{background:none;color:#9eb59e;padding:5px 1px;border-radius:10px;font-size:10px;font-weight:700}
+    .bottom-nav button span{display:block;font-size:21px;margin-bottom:2px}
+    .bottom-nav button.active{background:#244a30;color:#ffdf78}
+    .profile-row{display:flex;align-items:center;gap:13px}.profile-big{font-size:48px;width:70px;height:70px;display:grid;place-items:center;border-radius:20px;background:#344c29}
+    .profile-row h2{margin:0 0 4px;color:#ffe08a}.profile-row p{margin:0;color:var(--muted);font-size:12px}
+    .empty{text-align:center;padding:24px 10px;color:#b5c7b1;font-size:13px}
+    .toast{position:fixed;top:75px;left:12px;right:12px;max-width:500px;margin:auto;z-index:50;padding:13px 15px;border-radius:13px;background:#fff4d5;color:#283a25;font-weight:800;font-size:13px;box-shadow:var(--shadow);display:none}
+    .modal-back{position:fixed;inset:0;z-index:60;background:#0009;display:none;place-items:center;padding:18px}
+    .modal-back.show{display:grid}
+    .modal{width:min(100%,390px);background:#173725;border:1px solid #66824b;border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+    .modal h3{margin:0 0 8px;color:#ffdf7a}.modal p{font-size:13px;color:#d0dfc9;line-height:1.5}
+    .modal-actions{display:flex;gap:8px;margin-top:14px}.modal-actions button{flex:1}
+    footer{text-align:center;color:#78927a;font-size:10px;padding:18px 5px}
+    @media(min-width:650px){main{padding:22px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.plot-grid{grid-template-columns:repeat(4,1fr)}.hero{padding:25px}.hero h2{font-size:28px}.farm-scene{min-height:270px}.plot{min-height:110px}}
+    </style>
+    </head>
+    <body>
 
-function olayGoster(s) {
-  const satirlar = [`<div>💰 Toplanan: <b>+${sayi(s.toplam)}</b></div>`];
-  if (s.olaylar.length) s.olaylar.forEach((o) => satirlar.push(`<div>${o}</div>`));
-  else satirlar.push("<div>☀️ Sakin bir dönemdi, hiçbir olay olmadı.</div>");
-  $("olaylar").innerHTML = satirlar.join("");
-  bildir(s.olaylar);
-}
+    <section id="authScreen">
+      <div class="auth-cloud c1">☁️</div><div class="auth-cloud c2">☁️</div>
+      <div class="auth-mascot left">🍌🕶️</div><div class="auth-mascot right">🍎🕶️</div>
+      <div class="auth-card">
+        <div class="brand-mark">🍏</div>
+        <h1>MEYVE BANK</h1>
+        <div class="tagline">Hayalindeki çiftliği kur, meyvelerini yetiştir!</div>
+        <div class="auth-tabs">
+          <button id="loginTab" class="active" type="button">Giriş Yap</button>
+          <button id="registerTab" type="button">Kayıt Ol</button>
+        </div>
+        <input id="displayName" class="field hidden" maxlength="16" autocomplete="nickname" placeholder="Çiftçi adın">
+        <input id="email" class="field" type="email" autocomplete="email" placeholder="E-posta adresin">
+        <input id="password" class="field" type="password" autocomplete="current-password" placeholder="Şifren (en az 6 karakter)">
+        <button id="authButton" class="primary auth-submit" type="button">Çiftliğime Gir</button>
+        <div id="authMessage" class="auth-message" role="status"></div>
+        <div class="auth-note">Hesabın ve oyun ilerlemen Firebase ile saklanır. Şifreni kimseyle paylaşma.</div>
+      </div>
+    </section>
 
-function git(v) {
-  document.querySelectorAll(".gorunum").forEach((e) => e.classList.remove("aktif"));
-  $("v-" + v).classList.add("aktif");
-  document.querySelectorAll(".alt button").forEach((b) => b.classList.toggle("aktif", b.getAttribute("data-git") === v));
-  window.scrollTo(0, 0);
-}
-document.addEventListener("click", (e) => {
-  const g = e.target.closest("[data-git]");
-  if (g) git(g.getAttribute("data-git"));
-});
+    <div id="app" class="hidden">
+      <header class="topbar">
+        <div class="brand-small">🍃 MEYVE BANK</div>
+        <div class="player-chip"><div class="avatar">🧑‍🌾</div><div><div id="topName" class="player-name">Çiftçi</div><div id="topLevel" class="level">Seviye 1</div></div></div>
+        <div class="wallet">🪙 <span id="topCoins">0</span></div>
+      </header>
 
-function listeleriCiz() {
-  $("magaza").innerHTML = MEYVELER.map((m) => {
-    const f = fiyatAl(m);
-    return `<div class="mkart"><div class="ad">${m.ad}</div>
-      <div class="gorsel">${gorsel(m)}</div>
-      <div class="stok">Sahip olduğun: ${adet(m)} · ⚡ ${sayi(m.gelir)}/sn</div>
-      <button data-al="${m.id}" ${durum.para >= f ? "" : "disabled"}>💰 ${sayi(f)}</button></div>`;
-  }).join("");
+      <main>
+        <section id="page-home" class="page active">
+          <div class="hero">
+            <div class="hero-mascots"><span>🍌🕶️</span><span>🍎🕶️</span></div>
+            <h2>Çiftliğine hoş geldin!</h2>
+            <p>Tohumlarını seç, tarlana ek, ürünlerine bak ve kendi meyve imparatorluğunu büyüt.</p>
+          </div>
+          <div class="stats">
+            <div class="stat"><div class="ico">🌱</div><strong id="statPlants">0</strong><small>Ekili tarla</small></div>
+            <div class="stat"><div class="ico">🧺</div><strong id="statHarvests">0</strong><small>Hasat sayısı</small></div>
+            <div class="stat"><div class="ico">⭐</div><strong id="statXP">0</strong><small>Deneyim puanı</small></div>
+          </div>
+          <div class="section-title"><h2>🌾 Çiftlik arazin</h2><span class="muted" id="plotCount">4 alan</span></div>
+          <div class="farm-scene"><div class="farm-decor"><span>🌳</span><span>🏡</span><span>🌲</span></div><div id="homePlots" class="plot-grid"></div></div>
+          <div class="section-title"><h2>📌 Günlük çiftçi notu</h2></div>
+          <div class="notice">Her bitkinin büyüme süresi ve hasat değeri farklıdır. Bazı nadir tohumlar çok kazandırabilir ama hastalık ve ürün kaybı riski de taşır. Çiftliğini düzenli kontrol et!</div>
+          <div class="action-row"><button class="green-btn" data-page="garden">🌱 Bahçeye git</button><button class="soft-btn" data-page="market">🛒 Tohum pazarı</button></div>
+        </section>
 
-  const sahip = MEYVELER.filter((m) => adet(m) > 0);
-  $("bahceListe").innerHTML = sahip.length ? sahip.map((m) =>
-    `<div class="mkart"><div class="ad">${m.ad}</div>
-      <div class="gorsel">${gorsel(m)}</div>
-      <div class="stok">${adet(m)} adet · ⚡ ${sayi(adet(m) * m.gelir)}/sn</div></div>`
-  ).join("") : `<div class="bos">Bahçen boş. Pazardan ilk meyveni al! 🌱</div>`;
-}
+        <section id="page-garden" class="page">
+          <div class="section-title"><h2>🏡 Bahçem</h2><span class="muted" id="gardenCount"></span></div>
+          <div class="notice">Boş bir alana dokunarak tohum ekebilirsin. Bitkinin büyümesi için bekle ve durumunu kontrol et. Hasat zamanı geldiğinde ürününü topla.</div>
+          <div id="gardenPlots" class="plot-grid panel"></div>
+          <div class="section-title"><h2>🧰 Çiftçi aletleri</h2></div>
+          <div class="grid">
+            <div class="item-card"><div class="item-icon">💧</div><h3>Sulama</h3><p>Seçtiğin ekili alanın büyümesine yardımcı olur.</p><button id="waterAll" class="green-btn">Sulama yap · 50 🪙</button></div>
+            <div class="item-card"><div class="item-icon">🧪</div><h3>Bakım kiti</h3><p>Hastalanmış bir bitkinin iyileşme şansını artırır.</p><button id="careAll" class="green-btn">Bakım kiti · 120 🪙</button></div>
+          </div>
+        </section>
 
-function ciz() {
-  const b = birikim();
-  const toplam = MEYVELER.reduce((t, m) => t + adet(m), 0);
-  $("ciftci").textContent = durum.ad || "Çiftçi";
-  $("para").textContent = sayi(durum.para);
-  $("saniyelik").textContent = sayi(saniyelikGelir());
-  $("birikim").textContent = sayi(b);
-  $("r-bahce").textContent = sayi(toplam);
-  $("r-banka").style.display = b >= 1 ? "block" : "none";
-  $("toplaBtn").classList.toggle("hazir", b >= 1);
-  const imza = MEYVELER.map((m) => adet(m) + ":" + (durum.para >= fiyatAl(m) ? 1 : 0)).join("|");
-  if (imza !== sonImza) { sonImza = imza; listeleriCiz(); }
-}
+        <section id="page-market" class="page">
+          <div class="section-title"><h2>🛒 Tohum pazarı</h2><span class="muted">Çeşit çeşit tohum</span></div>
+          <div class="notice warn">🌟 Nadir tohumların fiyatı yüksektir. Hasat miktarı daha değerli olabilir; ancak her ekim garanti değildir. Tohum almadan önce büyüme süresini ve riskini incele.</div>
+          <div id="marketGrid" class="grid"></div>
+        </section>
 
-async function kaydet() {
-  await updateDoc(doc(db, "users", uid), {
-    para: durum.para, agaclar: durum.agaclar, son: durum.son, sigorta: durum.sigorta
-  });
-}
+        <section id="page-inventory" class="page">
+          <div class="section-title"><h2>🧺 Depom</h2><span class="muted">Topladığın ürünler</span></div>
+                    <div class="panel"><div id="inventoryList" class="grid"></div></div>
+          <div class="section-title"><h2>📦 Ürünlerini sat</h2></div>
+          <div class="notice">Hasat ettiğin meyveler depoya eklenir. İstediğin ürünü pazarda satıp oyun parası kazanabilirsin.</div>
+          <div id="sellGrid" class="grid"></div>
+        </section>
 
-async function topla() {
-  const s = hasat();
-  if (s.toplam >= 1) ucur("+" + sayi(s.toplam) + " 💰", $("toplaBtn"));
-  olayGoster(s);
-  sonImza = "";
-  ciz();
-  await kaydet();
-}
+        <section id="page-expansion" class="page">
+          <div class="section-title"><h2>🏗️ Arazi geliştirme</h2></div>
+          <div class="hero"><h2>Daha büyük bir çiftlik!</h2><p>Yeni tarla alanları açarak aynı anda daha fazla meyve yetiştirebilirsin.</p></div>
+          <div class="panel" style="margin-top:12px">
+            <div class="profile-row"><div class="profile-big">🚜</div><div><h2 id="landTitle">4 tarla alanı</h2><p id="landDescription">Çiftliğin büyümeye hazır.</p></div></div>
+            <div class="notice">Yeni arazi açmak için oyun parası gerekir. Her genişletmede bir sonraki alanın maliyeti artar.</div>
+            <button id="expandButton" class="primary green-btn">Yeni arazi aç</button>
+          </div>
+        </section>
 
-async function satinAl(id, el) {
-  const m = MEYVELER.find((x) => x.id === id);
-  // Önce birikmiş kazanç hesaplanır, olaylar uygulanır
-  if (birikim() >= 1) olayGoster(hasat());
-  const f = fiyatAl(m);
-  if (durum.para < f) { sonImza = ""; ciz(
+        <section id="page-profile" class="page">
+          <div class="section-title"><h2>👨‍🌾 Çiftçi profilim</h2></div>
+          <div class="panel">
+            <div class="profile-row"><div class="profile-big">🧑‍🌾</div><div><h2 id="profileName">Çiftçi</h2><p id="profileEmail"></p><p id="profileLevel">Seviye 1</p></div></div>
+            <div class="stats">
+              <div class="stat"><div class="ico">🪙</div><strong id="profileCoins">0</strong><small>Bakiye</small></div>
+              <div class="stat"><div class="ico">🌾</div><strong id="profileHarvests">0</strong><small>Hasat</small></div>
+              <div class="stat"><div class="ico">🏅</div><strong id="profileXP">0</strong><small>Deneyim</small></div>
+            </div>
+            <div class="section-title"><h2>Seviye ilerlemesi</h2></div>
+            <div class="progress"><span id="xpBar" style="width:0%"></span></div><div id="xpText" class="muted">0 / 100 XP</div>
+            <div class="notice">Oyun parası yalnızca Meyve Bank içinde kullanılan sanal puandır. Gerçek para veya yatırım değeri yoktur.</div>
+            <button id="signOutButton" class="danger-btn">Güvenli çıkış yap</button>
+          </div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav">
+        <button class="active" data-page="home"><span>🏡</span>Çiftlik</button>
+        <button data-page="garden"><span>🌱</span>Bahçem</button>
+        <button data-page="market"><span>🛒</span>Pazar</button>
+        <button data-page="inventory"><span>🧺</span>Depom</button>
+        <button data-page="profile"><span>👤</span>Profil</button>
+      </nav>
+    </div>
+
+    <div id="toast" class="toast" role="status"></div>
+    <div id="modalBack" class="modal-back">
+      <div class="modal"><h3 id="modalTitle">Bilgi</h3><p id="modalText"></p><div class="modal-actions"><button id="modalCancel" class="soft-btn">Vazgeç</button><button id="modalOk" class="green-btn">Tamam</button></div></div>
+    </div>
+
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBegnG3ID_DNMAwb8HyDmAMbXz7w_vsEdk",
+      authDomain: "meyve-bank.firebaseapp.com",
+      projectId: "meyve-bank",
+      storageBucket: "meyve-bank.firebasestorage.app",
+      messagingSenderId: "470001117128",
+      appId: "1:470001117128:web:8bb1fcc194ac19e97442fd"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const $ = id => document.getElementById(id);
+    const fmt = n => Math.floor(Number(n)||0).toLocaleString("tr-TR");
+    const now = () => Date.now();
+
+    const CROPS = [
+     {id:"apple",name:"Elma",icon:"🍎",seed:80,sell:145,grow:90,level:1,risk:4,desc:"Yeni başlayan çiftçiler için güvenilir bir meyve."},
+     {id:"banana",name:"Muz",icon:"🍌",seed:120,sell:215,grow:110,level:1,risk:5,desc:"Sıcak havayı seven, sevilen bir ürün."},
+     {id:"pear",name:"Armut",icon:"🍐",seed:150,sell:265,grow:130,level:1,risk:5,desc:"Dengeli fiyatı ve büyüme süresiyle iyi bir tercih."},
+     {id:"orange",name:"Portakal",icon:"🍊",seed:190,sell:340,grow:150,level:2,risk:6,desc:"Bakımı kolay, bereketli bir narenciye."},
+     {id:"lemon",name:"Limon",icon:"🍋",seed:210,sell:370,grow:160,level:2,risk:6,desc:"Küçük ama değerli bir hasat."},
+     {id:"strawberry",name:"Çilek",icon:"🍓",seed:260,sell:455,grow:180,level:2,risk:8,desc:"Kısa sürede yetişir, dikkatli bakım ister."},
+     {id:"grapes",name:"Üzüm",icon:"🍇",seed:330,sell:590,grow:210,level:3,risk:8,desc:"Salkım salkım hasat için sabır gerekir."},
+     {id:"cherry",name:"Kiraz",icon:"🍒",seed:420,sell:760,grow:240,level:3,risk:9,desc:"Hassas ama pazarda değerli."},
+     {id:"watermelon",name:"Karpuz",icon:"🍉",seed:600,sell:1080,grow:300,level:4,risk:10,desc:"Geniş yer kaplayan iri bir ürün."},
+     {id:"pineapple",name:"Ananas",icon:"🍍",seed:950,sell:1750,grow:390,level:5,risk:13,desc:"Egzotik ve daha zahmetli."},
+     {id:"mango",name:"Mango",icon:"🥭",seed:1400,sell:2650,grow:480,level:6,risk:15,desc:"Sıcak iklim isteyen değerli meyve."},
+     {id:"kiwi",name:"Kivi",icon:"🥝",seed:1900,sell:3650,grow:540,level:7,risk:16,desc:"Özel bakım isteyen bir bahçe ürünü."},
+     {id:"avocado",name:"Avokado",icon:"🥑",seed:2600,sell:5100,grow:660,level:8,risk:18,desc:"Yavaş yetişir, iyi fiyatla satılır."},
+     {id:"dragon",name:"Ejder Meyvesi",icon:"🐉",seed:5200,sell:11200,grow:900,level:10,risk:24,desc:"Nadir tohum. Yüksek değer, yüksek risk."},
+     {id:"lychee",name:"Liçi",icon:"🌺",seed:7600,sell:16900,grow:1080,level:12,risk:27,desc:"Narin bir tropik meyve."},
+     {id:"rambutan",name:"Rambutan",icon:"🌰",seed:9800,sell:22500,grow:1260,level:14,risk:30,desc:"Nadir bulunan, özen isteyen bir ürün."},
+     {id:"mangosteen",name:"Mangostan",icon:"🟣",seed:14500,sell:34500,grow:1500,level:16,risk:33,desc:"Koleksiyonluk değerde özel bir meyve."},
+     {id:"durian",name:"Durian",icon:"🟢",seed:21000,sell:52000,grow:1800,level:18,risk:36,desc:"Çok pahalı tohum; yetiştirmesi zor."}
+    ];
+    const START_PLOTS = 4;
+    const MAX_PLOTS = 20;
+    const freshState = name => ({
+     schema:1, name, coins:650, xp:0, harvests:0, plots:Array(START_PLOTS).fill(null),
+     inventory:{}, createdAt:now(), updatedAt:now()
+    });
+    let user=null, game=null, authMode="login", toastTimer=null, selectedPlot=null, modalAction=null;
+    const cropById = id => CROPS.find(c=>c.id===id);
+    const levelFor = xp => Math.floor(Math.sqrt(Math.max(0,xp)/100))+1;
+    const xpNeeded = level => level*level*100;
+    const isReady = p => p && now() >= p.readyAt;
+
+    function notify(message){
+      $("toast").textContent=message;$("toast").style.display="block";
+      clearTimeout(toastTimer);toastTimer=setTimeout(()=>$("toast").style.display="none",2800);
+    }
+    function showModal(title,text,onOk){
+      $("modalTitle").textContent=title;$("modalText").textContent=text;
+      modalAction=onOk;$("modalBack").classList.add("show");
+         }
+    $("modalCancel").addEventListener("click",()=>{$("modalBack").classList.remove("show");modalAction=null;});
+    $("modalOk").addEventListener("click",()=>{const fn=modalAction;$("modalBack").classList.remove("show");modalAction=null;if(fn)fn();});
+
+    function authError(err){
+     const map={
+     "auth/email-already-in-use":"Bu e-posta ile zaten hesap açılmış. Giriş yapmayı dene.",
+     "auth/invalid-email":"E-posta adresi geçerli görünmüyor.",
+     "auth/weak-password":"Şifren en az 6 karakter olmalı.",
+     "auth/invalid-credential":"E-posta veya şifre hatalı.",
+     "auth/user-not-found":"Bu e-posta ile hesap bulunamadı.",
+     "auth/wrong-password":"Şifre yanlış.",
+     "auth/too-many-requests":"Çok fazla deneme yapıldı. Bir süre sonra tekrar dene.",
+     "auth/network-request-failed":"Bağlantı hatası. İnternetini kontrol et.",
+     "auth/operation-not-allowed":"Firebase'de E-posta/Şifre girişi etkin değil. Authentication ayarını kontrol et."
+     };
+     $("authMessage").textContent=map[err.code]||"İşlem tamamlanamadı: "+(err.message||"Bilinmeyen hata");
+    }
+    function setAuthMode(mode){
+     authMode=mode;
+     $("loginTab").classList.toggle("active",mode==="login");
+     $("registerTab").classList.toggle("active",mode==="register");
+     $("displayName").classList.toggle("hidden",mode!=="register");
+     $("authButton").textContent=mode==="login"?"Çiftliğime Gir":"Çiftliğimi Oluştur";
+     $("authMessage").textContent="";
+    }
+    $("loginTab").addEventListener("click",()=>setAuthMode("login"));
+    $("registerTab").addEventListener("click",()=>setAuthMode("register"));
+
+    $("authButton").addEventListener("click",async()=>{
+     const email=$("email").value.trim(), password=$("password").value;
+     const name=$("displayName").value.trim().replace(/[<>]/g,"").slice(0,16);
+     $("authMessage").textContent="";
+     if(!email||!password){$("authMessage").textContent="E-posta ve şifreni doldur.";return;}
+     if(authMode==="register"&&name.length<2){$("authMessage").textContent="Çiftçi adın en az 2 karakter olmalı.";return;}
+     $("authButton").disabled=true;$("authButton").textContent="Bağlanıyor...";
+     try{
+      if(authMode==="register"){
+       const cred=await createUserWithEmailAndPassword(auth,email,password);
+       await updateProfile(cred.user,{displayName:name});
+       const ref=doc(db,"users",cred.user.uid);
+       await setDoc(ref,freshState(name));
+      }else{
+       await signInWithEmailAndPassword(auth,email,password);
+      }
+     }catch(err){authError(err);}
+     finally{$("authButton").disabled=false;$("authButton").textContent=authMode==="login"?"Çiftliğime Gir":"Çiftliğimi Oluştur";}
+    });
+
+    async function loadPlayer(u){
+     const ref=doc(db,"users",u.uid);
+     let snap=await getDoc(ref);
+     if(!snap.exists()){
+      const initial=freshState((u.displayName||"Çiftçi").slice(0,16));
+      await setDoc(ref,initial);game=initial;
+     }else{
+      const d=snap.data();
+      game={
+       ...freshState((u.displayName||d.name||"Çiftçi").slice(0,16)),
+       ...d,
+       plots:Array.isArray(d.plots)?d.plots:Array(START_PLOTS).fill(null),
+       inventory:d.inventory&&typeof d.inventory==="object"?d.inventory:{}
+      };
+      while(game.plots.length<START_PLOTS)game.plots.push(null);
+     }
+     $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
+     renderAll();
+    }
+    onAuthStateChanged(auth,async u=>{
+     if(!u){user=null;game=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden");return;}
+     user=u;
+     try{await loadPlayer(u);}catch(err){console.error(err);notify("Oyuncu verisi yüklenemedi. Firestore kurallarını kontrol et.");}
+    });
+
+    function persist(){
+     if(!user||!game)return Promise.resolve();
+     game.updatedAt=now();
+     return setDoc(doc(db,"users",user.uid),game);
+    }
+    // Bu arayüzdeki istemci işlemleri oyun prototipi içindir.
+    // Gerçek yayında bakiye/hasat işlemleri Cloud Functions tarafında doğrulanmalıdır.
+    async function changeGame(mutator){
+     if(!user||!game)return;
+     const before=JSON.stringify(game);
+     try{
+      mutator();await persist();renderAll();
+     }catch(e){
+      console.error(e);game=JSON.parse(before);renderAll();notify("Kayıt başarısız. İnternetini ve Firestore kurallarını kontrol et.");
+     }
+    }
+    function cropStage(p){
+     if(!p)return {icon:"🟫",label:"Boş tarla",progress:0};
+     if(p.diseased)return {icon:"🥀",label:"Hasta bitki",progress:0};
+     const c=cropById(p.cropId);if(!c)return {icon:"🌱",label:"Bitki",progress:0};
+     const ratio=Math.max(0,Math.min(1,(now()-p.plantedAt)/(p.readyAt-p.plantedAt)));
+     if(ratio>=1)return {icon:c.icon,label:"Hasada hazır!",progress:100};
+     if(ratio<.35)return {icon:"🌱",label:"Filizleniyor",progress:ratio*100};
+     if(ratio<.75)return {icon:"🌿",label:"Büyüyor",progress:ratio*100};
+     return {icon:c.icon,label:"Olgunlaşıyor",progress:ratio*100};
+    }
+    function plotMarkup(index){
+     const p=game.plots[index];
+     if(!p)return `<button class="plot empty" data-plot="${index}"><span class="plant">➕</span><b>Boş alan</b><small>Tohum ek</small></button>`;
+     const c=cropById(p.cropId),stage=cropStage(p),remaining=Math.max(0,Math.ceil((p.readyAt-now())/1000));
+     const progress=stage.progress;
+     return `<div class="plot" data-plot-card="${index}"><span class="plant">${stage.icon}</span><b>${c?c.name:"Bilinmeyen bitki"}</b><small>${stage.label}</small><div class="progress" style="width:85%"><span style="width:${progress}%"></span></div><small>${p.diseased?"Bakım gerekli":isReady(p)?"Hasat edebilirsin":remaining+" sn kaldı"}</small>${p.diseased?`<button class="soft-btn" data-cure="${index}">🧪 İyileştir</button>`:isReady(p)?`<button class="green-btn" data-harvest="${index}">🧺 Hasat</button>`:`<button class="soft-btn" data-inspect="${index}">İncele</button>`}</div>`;
+    }
+    function renderPlots(){
+     const markup=game.plots.map((_,i)=>plotMarkup(i)).join("");
+     $("homePlots").innerHTML=markup;$("gardenPlots").innerHTML=markup;
+     $("plotCount").textContent=game.plots.length+" alan";
+     $("gardenCount").textContent=game.plots.filter(Boolean).length+" ekili";
+    }
+    function renderMarket(){
+     const level=levelFor(game.xp);
+     $("marketGrid").innerHTML=CROPS.map(c=>{
+      const locked=level<c.level;
+      return `<div class="item-card"><div class="item-icon">${c.icon}</div><h3>${c.name}</h3><div class="item-meta">🌱 Tohum: ${fmt(c.seed)} 🪙</div><div class="item-meta">🧺 Satış: ${fmt(c.sell)} 🪙</div><div class="item-meta">⏱️ ${Math.ceil(c.grow/60)} dk · ⚠️ Risk %${c.risk}</div><p>${c.desc}</p><button class="green-btn" data-buy-seed="${c.id}" ${locked||game.coins<c.seed||!game.plots.some(p=>!p)?"disabled":""}>${locked?"🔒 Seviye "+c.level:game.coins<c.seed?"Yetersiz bakiye":!game.plots.some(p=>!p)?"Tarla dolu":"Ekim yap · "+fmt(c.seed)+" 🪙"}</button></div>`;
+     }).join("");
+    }
+    function renderInventory(){
+     const entries=CROPS.filter(c=>(game.inventory[c.id]||0)>0);
+     $("inventoryList").innerHTML=entries.length?entries.map(c=>`<div class="item-card"><div class="item-icon">${c.icon}</div><h3>${c.name}</h3><div class="item-meta">${fmt(game.inventory[c.id])} adet</div></div>`).join(""):`<div class="empty" style="grid-column:1/-1">Depoda henüz ürün yok. Hasat yaptığında ürünlerin burada görünecek. 🌱</div>`;
+     $("sellGrid").innerHTML=entries.length?entries.map(c=>`<div class="item-card"><div class="item-icon">${c.icon}</div><h3>${c.name}</h3><p>${fmt(c.sell)} 🪙 / adet</p><button class="green-btn" data-sell="${c.id}">1 adet sat</button><button class="soft-btn" data-sell-all="${c.id}">Hepsini sat (${fmt(game.inventory[c.id])})</button></div>`).join(""):`<div class="empty" style="grid-column:1/-1">Satılacak ürünün bulunmuyor.</div>`;
+         }
+    function renderProfile(){
+     const level=levelFor(game.xp),base=(level-1)*(level-1)*100,next=level*level*100,progress=Math.min(100,(game.xp-base)/(next-base)*100);
+     $("topName").textContent=game.name;$("topLevel").textContent="Seviye "+level;$("topCoins").textContent=fmt(game.coins);
+     $("profileName").textContent=game.name;$("profileEmail").textContent=user.email||"";
+     $("profileLevel").textContent="Seviye "+level;$("profileCoins").textContent=fmt(game.coins);
+     $("profileHarvests").textContent=fmt(game.harvests);$("profileXP").textContent=fmt(game.xp);
+     $("xpBar").style.width=progress+"%";$("xpText").textContent=fmt(game.xp-base)+" / "+fmt(next-base)+" XP";
+     $("statPlants").textContent=game.plots.filter(Boolean).length;$("statHarvests").textContent=fmt(game.harvests);$("statXP").textContent=fmt(game.xp);
+     $("landTitle").textContent=game.plots.length+" tarla alanı";
+     $("landDescription").textContent=(MAX_PLOTS-game.plots.length)+" yeni alan daha açabilirsin.";
+     const cost=expansionCost();$("expandButton").textContent=game.plots.length>=MAX_PLOTS?"Maksimum araziye ulaştın":"Yeni arazi aç · "+fmt(cost)+" 🪙";
+     $("expandButton").disabled=game.plots.length>=MAX_PLOTS||game.coins<cost;
+    }
+    function expansionCost(){return Math.round(900*Math.pow(1.72,game.plots.length-START_PLOTS));}
+    function renderAll(){if(!game)return;renderPlots();renderMarket();renderInventory();renderProfile();}
+    function navigate(page){
+     document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+     $("page-"+page).classList.add("active");
+     document.querySelectorAll(".bottom-nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+     window.scrollTo({top:0,behavior:"smooth"});
+    }
+    document.addEventListener("click",async e=>{
+     const nav=e.target.closest("[data-page]");if(nav){navigate(nav.dataset.page);return;}
+     const buy=e.target.closest("[data-buy-seed]");if(buy){plant(buy.dataset.buySeed);return;}
+     const harvest=e.target.closest("[data-harvest]");if(harvest){harvestPlot(Number(harvest.dataset.harvest));return;}
+     const sell=e.target.closest("[data-sell]");if(sell){sellCrop(sell.dataset.sell,1);return;}
+     const sellAll=e.target.closest("[data-sell-all]");if(sellAll){sellCrop(sellAll.dataset.sellAll,game.inventory[sellAll.dataset.sellAll]||0);return;}
+     const cure=e.target.closest("[data-cure]");if(cure){curePlot(Number(cure.dataset.cure));return;}
+     const inspect=e.target.closest("[data-inspect]");if(inspect){const p=game.plots[Number(inspect.dataset.inspect)],c=cropById(p.cropId);notify(c.name+" büyümeye devam ediyor.");return;}
+     const plot=e.target.closest("[data-plot]");if(plot){navigate("market");notify("Pazardan bir tohum seçerek bu alana ekim yapabilirsin.");return;}
+    });
+    async function plant(id){
+     const c=cropById(id);if(!c)return;
+     if(levelFor(game.xp)<c.level){notify("Bu tohum için seviye "+c.level+" olmalısın.");return;}
+     const index=game.plots.findIndex(p=>!p);if(index<0){notify("Boş tarla kalmadı. Önce arazi genişlet.");return;}
+     if(game.coins<c.seed){notify("Bu tohum için yeterli paran yok.");return;}
+     showModal(c.name+" ekilsin mi?",fmt(c.seed)+" 🪙 ödeyeceksin. Büyüme süresi yaklaşık "+Math.ceil(c.grow/60)+" dakika. Hastalık/ürün kaybı riski: %"+c.risk+".",async()=>{
+      await changeGame(()=>{
+       if(game.coins<c.seed||game.plots[index])throw new Error("Bakiye veya tarla değişti.");
+       game.coins-=c.seed;
+       game.plots[index]={cropId:id,plantedAt:now(),readyAt:now()+c.grow*1000,diseased:false};
+      });navigate("garden");notify(c.name+" tohumu ekildi! 🌱");
+     });
+    }
+    async function harvestPlot(index){
+     const p=game.plots[index];if(!p||!isReady(p)||p.diseased){notify("Bu bitki henüz hasada hazır değil.");return;}
+     const c=cropById(p.cropId);if(!c)return;
+     const roll=Math.random()*100;
+     await changeGame(()=>{
+      if(roll<c.risk){game.plots[index]=null;game.xp+=2;notify("Talihsizlik! "+c.name+" ürünü zarar gördü. Bir sonraki ekimde bol şans.");}
+      else{
+       const qty=1+(Math.random()<.22?1:0);
+       game.inventory[c.id]=(game.inventory[c.id]||0)+qty;
+       game.harvests+=1;game.xp+=Math.max(5,Math.round(c.sell/25));
+       game.plots[index]=null;
+       notify("Hasat başarılı! "+qty+" "+c.name+" depoya eklendi. 🧺");
+      }
+     });
+    }
+    async function sellCrop(id,qty){
+     const c=cropById(id);if(!c||qty<1)return;
+     const available=game.inventory[id]||0;qty=Math.min(qty,available);if(!qty)return;
+     await changeGame(()=>{game.inventory[id]-=qty;game.coins+=qty*c.sell;game.xp+=Math.max(1,Math.floor(qty/2));});
+     notify(qty+" "+c.name+" satıldı. +"+fmt(qty*c.sell)+" 🪙");
+    }
+    async function curePlot(index){
+     const p=game.plots[index];if(!p||!p.diseased)return;
+     if(game.coins<120){notify("Bakım kiti için 120 🪙 gerekiyor.");return;}
+     await changeGame(()=>{game.coins-=120;p.diseased=false;p.readyAt=Math.max(p.readyAt,now()+45000);});
+     notify("Bakım yapıldı. Bitki yeniden büyümeye başladı.");
+    }
+    $("waterAll").addEventListener("click",async()=>{
+     const p=game.plots.find(x=>x&&!x.diseased&&!isReady(x));if(!p){notify("Sulamaya uygun bitki yok.");return;}
+     if(game.coins<50){notify("Sulama için 50 🪙 gerekiyor.");return;}
+     await changeGame(()=>{game.coins-=50;game.plots.filter(x=>x&&!x.diseased&&!isReady(x)).forEach(x=>x.readyAt=Math.max(now(),x.readyAt-15000));});
+     notify("Sulama tamamlandı. Büyüme biraz hızlandı. 💧");
+    });
+    $("careAll").addEventListener("click",async()=>{
+     const p=game.plots.find(x=>x&&x.diseased);if(!p){notify("Bakım gerektiren hasta bitki yok.");return;}
+     if(game.coins<120){notify("Bakım kiti için 120 🪙 gerekiyor.");return;}
+     await changeGame(()=>{game.coins-=120;game.plots.filter(x=>x&&x.diseased).forEach(x=>{x.diseased=false;x.readyAt=Math.max(x.readyAt,now()+30000);});});
+     notify("Hasta bitkilerin bakımı yapıldı. 🧪");
+    });
+    $("expandButton").addEventListener("click",()=>{
+     const cost=expansionCost();if(game.plots.length>=MAX_PLOTS||game.coins<cost)return;
+     showModal("Araziyi genişlet",fmt(cost)+" 🪙 ödeyerek bir yeni tarla alanı açacaksın.",async()=>{
+      await changeGame(()=>{if(game.coins<cost||game.plots.length>=MAX_PLOTS)throw new Error("Arazi satın alınamadı.");game.coins-=cost;game.plots.push(null);});
+      notify("Yeni tarla alanın açıldı! 🚜");
+     });
+    });
+    $("signOutButton").addEventListener("click",async()=>{try{await persist();await signOut(auth);}catch(e){notify("Çıkış sırasında hata oluştu.");}});
+    setInterval(()=>{
+     if(!game||!user)return;
+     const old=JSON.stringify(game.plots);
+     let changed=false;
+     game.plots.forEach((p,i)=>{
+      if(!p||p.diseased||!isReady(p)||p.checkedEvent)return;
+      // Hasat olayı bir kez kontrol edilir. Risk sonucu otomatik ürün silmek yerine
+      // bitki hastalanır; oyuncu bakım yapabilir veya hasat zamanını yönetir.
+      const c=cropById(p.cropId);
+      if(Math.random()*100<c.risk/3){p.diseased=true;changed=true;}
+      p.checkedEvent=true;
+     });
+     if(changed){persist().then(renderAll).catch(console.error);}
+     else{renderPlots();}
+    },5000);
+    </script>
+    </body>
+    </html>
+    
